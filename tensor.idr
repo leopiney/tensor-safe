@@ -1,36 +1,22 @@
 module Tensor
 
--- import Data.HVect
 import Data.Vect
 
--- ListType : (singleton : Bool) -> Type
--- ListType False = List Nat
--- ListType True = Nat
-
--- data Shape = NilShape
---            | Axis Nat (Shape)
-
--- ShapeType : (shape : List Nat) -> Shape
--- ShapeType [] = NilShape
--- ShapeType (x :: xs) = Axis x (ShapeType xs)
-
--- data Tensor : Type -> Shape -> Type
--- data Tensor a = Scalar a
---               | Vector {l: Nat} (Vect l a)
-
--- Interfaces.Eq (Shape s) where
---   ShapeNil == ShapeNil = True
---   ShapeNil == y = False
---   y == ShapeNil = False
---   (ShapeApp m x) == (ShapeApp m y) = True
-
+--
+-- Unsafe shape
+--
 data UnsafeShape = MkUnsafeShape (List Nat)
-data SNat = MkSNat Nat
 
 Eq UnsafeShape where
   (MkUnsafeShape xs) == (MkUnsafeShape ys) = xs == ys
 
-data Shape : (shape : Vect n Nat) -> Type where
+transposeUnsafe : UnsafeShape -> UnsafeShape
+transposeUnsafe (MkUnsafeShape xs) = MkUnsafeShape (reverse xs) 
+
+--
+-- Safe shape
+--
+data Shape : (shape : Vect dim Nat) -> Type where
   ShapeNil  : Shape []
   ShapeApp  : (m : Nat) -> Shape s -> Shape (m :: s)
 
@@ -39,41 +25,38 @@ toUnsafe ShapeNil = MkUnsafeShape []
 toUnsafe (ShapeApp m xs) = let MkUnsafeShape xs' = toUnsafe xs in
                                MkUnsafeShape (m :: xs')
 
--- interface KnownNat (n : Nat) where
---   natSing : SNat
--- 
--- natVal : KnownNat n => Nat
--- natVal x = ?asdf
---
-interface KnownNat (n : Nat) where
-  fromNat : Nat -> Nat
+fromUnsafe : UnsafeShape -> Type
+fromUnsafe (MkUnsafeShape []) = Shape []
+fromUnsafe (MkUnsafeShape xs) = Shape (fromList xs)
 
-interface MkSafeShape (s : Vect n Nat) where
-   mkSafeShape : Shape s
- 
-MkSafeShape [] where
-  mkSafeShape = ShapeNil
+transpose : Shape s1 -> Shape s2
+transpose s = ?tranpose -- fromUnsafe (transposeUnsafe (toUnsafe s))
 
-(MkSafeShape s, KnownNat m) => MkSafeShape (m :: s) where
-  mkSafeShape = ?mkShapeShape
-
-zipWith2 : (a -> b -> c) -> Vect n a -> Vect n b -> Vect n c
-zipWith2 f [] [] = []
-zipWith2 f (x :: xs) (y :: ys) = f x y :: zipWith2 f xs ys
-
-
-fromUnsafe : UnsafeShape -> Shape s
-fromUnsafe (MkUnsafeShape []) = ?fromUnsafe_rhs_5
-fromUnsafe (MkUnsafeShape (x :: xs)) = ?fromUnsafe_rhs_3
 
 --
 -- Ejemplos
--- 
--- fromUnsafe (MkUnsafeShape []) = ShapeNil
---fromUnsafe (MkUnsafeShape (x :: xs)) = ?fromUnsafe_2
+--
+-- toUnsafe (ShapeApp 28 (ShapeApp 14 ShapeNil))
 
---let shape' = toUnsafe  
+--
+-- Tensor
+--
+data Tensor : a -> (Shape s) -> Type where
+  MkTensor : a -> (shape : Shape s) -> Tensor a shape
 
+--
+-- Tensor operations
+--
+using (x : a, y : a)
+  t_add : (Tensor a s) -> (Tensor a s) -> (Tensor a s)
+  t_add (MkTensor x s1) (MkTensor y s1) = MkTensor y s1
 
--- fromUnsafe (MkUnsafeShape []) = ?nilshape
--- fromUnsafe (MkUnsafeShape (x :: xs)) = ShapeApp x (fromUnsafe (MkUnsafeShape xs))
+t_transpose : (tensor : Tensor a shape_orig) -> (Tensor a shape_target)
+
+shapeMul : (Shape s1) -> (Shape s2) -> (Shape s3)
+shapeMul x y = ?shapeMul_rhs_1
+shapeMul (ShapeApp n xs) (ShapeApp m ys) = ?shapeMul_rhs_5
+
+using (x : a, y : a)
+  t_mul : (Tensor a s1) -> (Tensor a s2) -> (Tensor a (shapeMul s1 s2))
+  t_mul x y = ?t_mul_rhs
