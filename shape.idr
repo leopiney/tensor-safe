@@ -18,5 +18,24 @@ toUnsafe [] = MkUnsafeShape []
 toUnsafe (m ~~> xs) = let MkUnsafeShape xs' = toUnsafe xs in
                           MkUnsafeShape (m :: xs')
 
-fromUnsafe : UnsafeShape -> Shape s
-fromUnsafe (MkUnsafeShape xs) = ?fromUnsafe_rhs_1
+-- Deal with unification issues
+fromUnsafe : List Nat -> Shape s
+fromUnsafe { s = [] } [] = Nil
+fromUnsafe { s = m :: s1 } (x :: xs) = m ~~> (fromUnsafe xs)
+
+transpose : Shape s -> Shape (reverse s)
+transpose [] = []
+transpose (m ~~> xs) = ?transpose_rhs_1
+
+--
+-- Define Tensor data
+--
+Tensor : (ty : Type ** Shape s) -> Type
+
+t_add : a -> Tensor (a ** Shape s) -> Nat
+
+-- data Tensor : a -> (Shape s) -> Type where
+--   MkTensor : a -> (shape : Shape s) -> Tensor a shape
+-- 
+-- t_add : Tensor a s -> Tensor a s -> Tensor a s
+-- t_add (MkTensor x s1) (MkTensor y s1) = MkTensor y s1
