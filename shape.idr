@@ -23,6 +23,17 @@ fromUnsafe : List Nat -> Shape s
 fromUnsafe { s = [] } [] = Nil
 fromUnsafe { s = m :: s1 } (x :: xs) = m ~~> (fromUnsafe xs)
 
+
+interface MkShape (s : Vect n Nat) where
+  mkShape : Shape s
+
+MkShape [] where
+  mkShape = []
+
+(MkShape s) => MkShape (m :: s) where
+  mkShape = ?mkShapeHole
+
+
 transpose : Shape s -> Shape (reverse s)
 transpose [] = []
 transpose (m ~~> xs) = ?transpose_rhs_1
@@ -30,10 +41,6 @@ transpose (m ~~> xs) = ?transpose_rhs_1
 --
 -- Define Tensor data
 --
-Tensor : (ty : Type ** Shape s) -> Type
-
-t_add : a -> Tensor (a ** Shape s) -> Nat
-
 -- data Tensor : a -> (Shape s) -> Type where
 --   MkTensor : a -> (shape : Shape s) -> Tensor a shape
 -- 
