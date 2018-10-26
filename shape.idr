@@ -8,10 +8,12 @@ Eq UnsafeShape where
   (MkUnsafeShape xs) == (MkUnsafeShape ys) = xs == ys
 
 infixr 10 ~~>
+infixr 11 ~>>
 
 data Shape : (dims : Vect range Nat) -> Type where
   Nil: Shape []
   (~~>) : (m : Nat) -> Shape s -> Shape (m :: s)
+  (~>>) : (m : Nat) -> Shape s -> Shape (s ++ [m])
 
 toUnsafe : Shape s -> UnsafeShape
 toUnsafe [] = MkUnsafeShape []
@@ -33,10 +35,16 @@ MkShape [] where
 (MkShape s) => MkShape (m :: s) where
   mkShape = ?mkShapeHole
 
+myReverse : Vect n elem -> Vect n elem
+myReverse [] = []
+myReverse (x :: xs) = reverseProof (myReverse xs ++ [x])
+  where
+    reverseProof : Vect (k + 1) elem -> Vect (S k) elem
+    reverseProof {k} result = rewrite plusCommutative 1 k in result
 
-transpose : Shape s -> Shape (reverse s)
-transpose [] = []
-transpose (m ~~> xs) = ?transpose_rhs_1
+transpose : { s: Vect n Nat } -> Shape s -> { s2: Vect n Nat } -> { auto prf : s2 = myReverse s }-> Shape s2
+transpose [] {prf = Refl} = []
+transpose (m ~~> xs) {prf = Refl} = ?transpose_rhs_2 (m ~>> transpose xs)
 
 --
 -- Define Tensor data
