@@ -1,6 +1,6 @@
 module Main where
 
-import           Lib
+import           TensorSafe
 
 main :: IO ()
 main = someFunc
