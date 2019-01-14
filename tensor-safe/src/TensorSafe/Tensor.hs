@@ -31,7 +31,7 @@ import           GHC.TypeLits
 
 import           TensorSafe.Shape
 
-data ValidType = DT_FLOAT | DT_INT | DT_BOOL
+data ValidType = DT_FLOAT | DT_INT | DT_BOOL deriving Show
 
 class TensorType a where
     tensorType :: a -> ValidType
@@ -43,27 +43,25 @@ instance TensorType Int where
 instance TensorType Bool where
     tensorType _ = DT_BOOL
 
+
 data Tensor v (s :: [Nat]) where
-    Tensor :: (TensorType v) => v -> Tensor v s
+    Tensor :: (TensorType v) => v -> Shape s -> Tensor v s
 
--- type family NatMult (p :: (Nat, Nat, Nat)) :: Nat
--- type instance NatMult (m n 0) = 0
--- type instance NatMult m = (fst3 m) + (snd3 m) + NatMult ((fst3 m), (snd3 m), (thd3 m) - 1)
 
--- type family NatMult (p :: (Nat, Nat)) :: Nat
--- type instance NatMult (p m 0) = 0
--- type instance NatMult (p m n) = m + NatMult (m, n)
--- type instance NatMult (p m n o) = m + m + NatMult (m, m, ( - 1))
+instance Show (Tensor v s) where
+    show (Tensor v s) = "Tensor [" ++ "] [" ++ show s ++ "]"
 
--- type family ShapeProduct (s :: [Nat]) :: Nat
--- type instance ShapeProduct '[] = 1
--- type instance ShapeProduct (0 ': s) = ShapeProduct s
--- type instance ShapeProduct (m ': s) = ShapeProduct ((m - 1) ': s)
 
-type family NatDouble (s :: (Nat, Nat)) :
+type family NatMult (a :: Nat) (b :: Nat) :: Nat where
+    NatMult a 0 = 0
+    NatMult a b = a + a + NatMult a (b - 1)
+
 
 type family ShapeProduct (s :: [Nat]) :: Nat
 type instance ShapeProduct '[] = 1
-type instance ShapeProduct (m ': s) = ShapeProduct s + m
+type instance ShapeProduct (m ': s) = NatMult m (ShapeProduct s)
 
 -- constant :: (TensorType a, ShapeProduct s ~ n) => Vector n a -> Shape s -> Tensor a s
+
+-- constant :: (TensorType a, ShapeProduct s ~ n) => a -> Shape s -> Tensor a s
+-- constant t shp = Tensor t (toUnsafe shp)
