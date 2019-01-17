@@ -12,7 +12,9 @@
 
 module TensorSafe.Tensor where
 
+import           Data.Proxy       (Proxy (..))
 import           GHC.TypeLits
+
 import           TensorSafe.Shape
 
 --
@@ -37,11 +39,11 @@ instance ValidTensorType Bool
 --
 -- Define Tensor structure
 --
-data Tensor v (s :: [Nat]) where
-    Tensor :: (ValidTensorType v) => TensorType v -> Shape s -> Tensor v s
+data Tensor t (s :: [Nat]) where
+    Tensor :: (ValidTensorType t) => TensorType t -> Shape s -> Tensor t s
 
-instance Show (Tensor v s) where
-    show (Tensor v s) = "Tensor [" ++ show v ++ "] [" ++ show s ++ "]"
+instance Show (Tensor t s) where
+    show (Tensor t s) = "Tensor [" ++ show t ++ "] [" ++ show s ++ "]"
 
 
 --
@@ -56,7 +58,13 @@ type family ShapeProduct (s :: [Nat]) :: Nat
 type instance ShapeProduct '[] = 1
 type instance ShapeProduct (m ': s) = NatMult m (ShapeProduct s)
 
--- constant :: (TensorType a, ShapeProduct s ~ n) => Vector n a -> Shape s -> Tensor a s
+constant :: (ValidTensorType t) => TensorType t -> Shape s -> Tensor t s
+constant t shp = Tensor t shp
 
--- constant :: (TensorType a, ShapeProduct s ~ n) => a -> Shape s -> Tensor a s
--- constant t shp = Tensor t (toUnsafe shp)
+add :: (ValidTensorType t) => Tensor t s -> Tensor t s -> Tensor t s
+add t1 t2 = t1
+
+matMult :: (ValidTensorType t) => Tensor t '[i, n] -> Tensor t '[n, o] -> Tensor t '[i, o]
+matMult
+    (Tensor t ((i :: Proxy m) :-- _))
+    (Tensor _ (_ :-- (o :: Proxy m2) :-- Nil)) = Tensor t (i :-- o :-- Nil)
