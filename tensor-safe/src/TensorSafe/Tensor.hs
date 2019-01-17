@@ -1,57 +1,52 @@
-{-# LANGUAGE ConstraintKinds           #-}
-{-# LANGUAGE DataKinds                 #-}
-{-# LANGUAGE ExistentialQuantification #-}
-{-# LANGUAGE FlexibleContexts          #-}
-{-# LANGUAGE FlexibleInstances         #-}
-{-# LANGUAGE GADTs                     #-}
-{-# LANGUAGE KindSignatures            #-}
-{-# LANGUAGE MagicHash                 #-}
--- {-# LANGUAGE NoImplicitPrelude    #-}
-{-# LANGUAGE NoStarIsType              #-}
-{-# LANGUAGE PolyKinds                 #-}
-{-# LANGUAGE RankNTypes                #-}
-{-# LANGUAGE ScopedTypeVariables       #-}
-{-# LANGUAGE Trustworthy               #-}
-{-# LANGUAGE TypeFamilies              #-}
-{-# LANGUAGE TypeOperators             #-}
-{-# LANGUAGE UndecidableInstances      #-}
+{-# LANGUAGE ConstraintKinds      #-}
+{-# LANGUAGE DataKinds            #-}
+{-# LANGUAGE FlexibleContexts     #-}
+{-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE GADTs                #-}
+{-# LANGUAGE KindSignatures       #-}
+{-# LANGUAGE ScopedTypeVariables  #-}
+{-# LANGUAGE TypeFamilies         #-}
+{-# LANGUAGE TypeOperators        #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 
 module TensorSafe.Tensor where
 
-import           Data.Int          (Int16, Int64, Int8)
-import           Data.Maybe        (fromJust)
-import           Data.Proxy        (Proxy (..))
-import qualified Data.Vector       as VN
-import           Data.Vector.Sized (Vector (..), fromList, toList)
-import           Data.Word         (Word8)
-import           GHC.TypeLits      (KnownNat, Nat, natVal)
 import           GHC.TypeLits
-
-
 import           TensorSafe.Shape
 
-data ValidType = DT_FLOAT | DT_INT | DT_BOOL deriving Show
+--
+-- Define valid tensor types
+--
+data TensorType v where
+    DT_FLOAT :: TensorType Float
+    DT_INT :: TensorType Int
+    DT_BOOL :: TensorType Bool
 
-class TensorType a where
-    tensorType :: a -> ValidType
+instance Show (TensorType v) where
+    show DT_BOOL  = "BOOL"
+    show DT_FLOAT = "FLOAT"
+    show DT_INT   = "INT"
 
-instance TensorType Float where
-    tensorType _ = DT_FLOAT
-instance TensorType Int where
-    tensorType _ = DT_INT
-instance TensorType Bool where
-    tensorType _ = DT_BOOL
+class ValidTensorType a
 
+instance ValidTensorType Float
+instance ValidTensorType Int
+instance ValidTensorType Bool
 
+--
+-- Define Tensor structure
+--
 data Tensor v (s :: [Nat]) where
-    Tensor :: (TensorType v) => v -> Shape s -> Tensor v s
-
+    Tensor :: (ValidTensorType v) => TensorType v -> Shape s -> Tensor v s
 
 instance Show (Tensor v s) where
-    show (Tensor v s) = "Tensor [" ++ "] [" ++ show s ++ "]"
+    show (Tensor v s) = "Tensor [" ++ show v ++ "] [" ++ show s ++ "]"
 
 
+--
+-- Natural number operations helpers
+--
 type family NatMult (a :: Nat) (b :: Nat) :: Nat where
     NatMult a 0 = 0
     NatMult a b = a + a + NatMult a (b - 1)
