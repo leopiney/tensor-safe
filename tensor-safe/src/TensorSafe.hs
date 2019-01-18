@@ -21,6 +21,10 @@ someFunc =
         (tensor3 :: Tensor Bool '[28, 28]) = tensor1 `add` tensor2
         (tensor4 :: Tensor Float '[1, 3]) = Tensor DT_FLOAT shape1
         (tensor5 :: Tensor Float '[3, 4]) = Tensor DT_FLOAT shape2
+        -- (tensor6 :: Tensor Float '[1, 6]) = tensor4 `matMult` tensor5 in
+        -- Couldn't match type ‘4’ with ‘6’
+        -- Expected type: Tensor Float '[1, 6]
+        --   Actual type: Tensor Float '[1, 4]
         (tensor6 :: Tensor Float '[1, 4]) = tensor4 `matMult` tensor5 in
         do
             putStrLn $ "Building Shape[1,3] from unsafe list [1,3]: " ++ show shape1
