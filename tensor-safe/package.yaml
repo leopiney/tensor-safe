@@ -1,43 +1,43 @@
-name:                tensor-safe
-version:             0.1.0.0
-github:              "leopiney/tensor-safe"
-license:             BSD3
-author:              "Leonardo Pineyro"
-maintainer:          "leopiney@gmail.com"
-copyright:           "2019 Leonardo Pineyro"
+name: tensor-safe
+version: 0.1.0.0
+github: "leopiney/tensor-safe"
+license: BSD3
+author: "Leonardo Pineyro"
+maintainer: "leopiney@gmail.com"
+copyright: "2019 Leonardo Pineyro"
 
 extra-source-files:
-- README.md
+  - README.md
 
 ghc-options: -Wall
 
 dependencies:
-- base >= 4.7 && < 5
-- extra >= 1.6
-- vector >= 0.12
-- vector-sized > 1.2
+  - base >= 4.7 && < 5
+  - extra >= 1.6
+  - vector >= 0.12
+  - vector-sized > 1.2
 
 library:
   source-dirs: src
 
 executables:
   tensor-safe-exe:
-    main:                Main.hs
-    source-dirs:         app
+    main: Main.hs
+    source-dirs: app
     ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
     dependencies:
-    - tensor-safe
+      - tensor-safe
 
 tests:
   tensor-safe-test:
-    main:                Spec.hs
-    source-dirs:         test
+    main: Spec.hs
+    source-dirs: test
     ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
     dependencies:
-    - tensor-safe
+      - tensor-safe

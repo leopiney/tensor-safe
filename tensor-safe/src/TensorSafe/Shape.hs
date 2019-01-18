@@ -12,9 +12,11 @@ module TensorSafe.Shape (
 ) where
 
 import           Data.Proxy   (Proxy (..))
+-- import           GHC.Natural  (naturalToInt)
+-- import           GHC.TypeNats (KnownNat, Nat, natVal)
 import           GHC.TypeLits (KnownNat, Nat, natVal)
 
-newtype UnsafeShape = UnsafeShape [Integer] deriving (Eq, Show)
+newtype UnsafeShape = UnsafeShape [Int] deriving (Eq, Show)
 
 --
 -- Define the safe Shape data kind
@@ -49,6 +51,7 @@ instance (MkShape s, KnownNat m) => MkShape (m ': s) where
 
 toUnsafe :: Shape s -> UnsafeShape
 toUnsafe Nil = UnsafeShape []
+-- toUnsafe ((pm :: Proxy m) :-- s) = UnsafeShape (naturalToInt (natVal pm) : s')
 toUnsafe ((pm :: Proxy m) :-- s) = UnsafeShape (fromInteger (natVal pm) : s')
     where
         (UnsafeShape s') = toUnsafe s

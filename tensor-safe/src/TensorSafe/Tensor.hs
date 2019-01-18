@@ -59,12 +59,12 @@ type instance ShapeProduct '[] = 1
 type instance ShapeProduct (m ': s) = NatMult m (ShapeProduct s)
 
 constant :: (ValidTensorType t) => TensorType t -> Shape s -> Tensor t s
-constant t shp = Tensor t shp
+constant t s = Tensor t s
 
 add :: (ValidTensorType t) => Tensor t s -> Tensor t s -> Tensor t s
-add t1 t2 = t1
+add t1 _ = t1
 
 matMult :: (ValidTensorType t) => Tensor t '[i, n] -> Tensor t '[n, o] -> Tensor t '[i, o]
 matMult
     (Tensor t ((i :: Proxy m) :-- _))
-    (Tensor _ (_ :-- (o :: Proxy m2) :-- Nil)) = Tensor t (i :-- o :-- Nil)
+    (Tensor _ (_ :-- (o :: Proxy m2) :-- _)) = Tensor t (i :-- o :-- Nil)
