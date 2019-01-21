@@ -3,4 +3,4 @@ module Main where
 import           TensorSafe
 
 main :: IO ()
-main = someFunc
+main = someFunc2

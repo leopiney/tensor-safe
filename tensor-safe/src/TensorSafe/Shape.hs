@@ -7,10 +7,12 @@
 module TensorSafe.Shape (
     Shape(..),
     UnsafeShape(..),
+    buildShape,
     fromUnsafe,
     toUnsafe,
 ) where
 
+import           Data.Maybe   (fromJust)
 import           Data.Proxy   (Proxy (..))
 -- import           GHC.Natural  (naturalToInt)
 -- import           GHC.TypeNats (KnownNat, Nat, natVal)
@@ -62,3 +64,6 @@ fromUnsafe shape = if toUnsafe myShape == shape
     else Nothing
     where
         myShape = mkShape :: Shape s
+
+buildShape :: forall s. MkShape s => [Int] -> Shape s
+buildShape = fromJust . fromUnsafe . UnsafeShape
