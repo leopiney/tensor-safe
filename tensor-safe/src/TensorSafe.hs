@@ -49,10 +49,10 @@ someFunc =
 someFunc2 :: IO ()
 someFunc2 =
     let
-        node1_shp :: Shape '[1, 3]          = buildShape [1, 3]
-        node1 :: Tensor Float '[1, 3]       = constant DT_FLOAT node1_shp
-        node2_shp :: Shape '[1, 3]          = buildShape [1, 3]
-        node2 :: Tensor Float '[1, 3]       = constant DT_FLOAT node2_shp
-        node_add :: Tensor Float '[1, 3]    = node1 `add` node2 in
+        node1_shp :: Shape '[1, 3] = buildShape [1, 3]
+        node1                      = constant DT_FLOAT node1_shp
+        node2_shp :: Shape '[1, 2] = buildShape [1, 2]
+        node2                      = constant DT_FLOAT node2_shp
+        node_add                   = node1 `add` node2 in
     do
         putStrLn $ show node_add
