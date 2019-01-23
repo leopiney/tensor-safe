@@ -39,7 +39,7 @@ data Tensor t (s :: [Nat]) where
     Tensor :: (ValidTensorType t) => TensorType t -> Shape s -> Tensor t s
 
 instance Show (Tensor t s) where
-    show (Tensor t s) = "Tensor [" ++ show t ++ "] [" ++ show s ++ "]"
+    show (Tensor t s) = "Tensor <" ++ show t ++ "> [" ++ show s ++ "]"
 
 
 --
