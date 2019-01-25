@@ -42,18 +42,6 @@ instance Show (Tensor t s) where
     show (Tensor t s) = "Tensor <" ++ show t ++ "> [" ++ show s ++ "]"
 
 
---
--- Natural number operations helpers
---
-type family NatMult (a :: Nat) (b :: Nat) :: Nat where
-    NatMult a 0 = 0
-    NatMult a b = a + a + NatMult a (b - 1)
-
-
-type family ShapeProduct (s :: [Nat]) :: Nat
-type instance ShapeProduct '[] = 1
-type instance ShapeProduct (m ': s) = NatMult m (ShapeProduct s)
-
 constant :: (ValidTensorType t) => TensorType t -> Shape s -> Tensor t s
 constant t s = Tensor t s
 
