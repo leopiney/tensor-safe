@@ -12,8 +12,8 @@
 Network
 
 [ Conv2D 1 10 5 5 1 1, Pooling 2 2 2 2, Relu
-, Convolution 10 16 5 5 1 1, Pooling 2 2 2 2, Reshape, Relu
-, FullyConnected 256 80, Logit, FullyConnected 80 10, Logit]
+, Conv2D 10 16 5 5 1 1, Pooling 2 2 2 2, Reshape, Relu
+, Dense 256 80, Logit, Dense 80 10, Logit]
 
 [ 'Shape [28 28], 'Shape [24 24 10], 'Shape [12 12 10], 'Shape [12 12 10]
 , 'Shape [8 8 16], 'Shape [4 4 16], 'Shape [256], 'Shape [256]

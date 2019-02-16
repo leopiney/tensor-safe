@@ -50,5 +50,5 @@ add t1 _ = t1
 
 matMult :: (ValidTensorType t) => Tensor t '[i, n] -> Tensor t '[n, o] -> Tensor t '[i, o]
 matMult
-    (Tensor t ((i :: Proxy m) :-- _))
-    (Tensor _ (_ :-- (o :: Proxy m2) :-- _)) = Tensor t (i :-- o :-- Nil)
+    (Tensor t ((i :: Proxy m) :~> _))
+    (Tensor _ (_ :~> (o :: Proxy m2) :~> _)) = Tensor t (i :~> o :~> SNil)

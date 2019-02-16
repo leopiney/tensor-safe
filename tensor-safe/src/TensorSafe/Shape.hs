@@ -7,6 +7,7 @@
 module TensorSafe.Shape (
     Shape(..),
     UnsafeShape(..),
+    FixedShape(..),
     buildShape,
     fromUnsafe,
     toUnsafe,
@@ -20,20 +21,24 @@ import           GHC.TypeLits (KnownNat, Nat, natVal)
 
 newtype UnsafeShape = UnsafeShape [Int] deriving (Eq, Show)
 
+data FixedShape
+  = D1 Nat
+  | D2 Nat Nat
+  | D3 Nat Nat Nat
 --
 -- Define the safe Shape data kind
 --
-infixr 5 :--
+infixr 5 :~>
 
-data Shape (s :: [Nat]) where
-    Nil :: Shape '[]
-    (:--) :: KnownNat m => Proxy m -> Shape s -> Shape (m ': s)
+data Shape :: [Nat] -> * where
+    SNil :: Shape '[]
+    (:~>) :: KnownNat m => Proxy m -> Shape s -> Shape (m ': s)
 
 
 showShape :: (Shape s) -> String
-showShape Nil                       = ""
-showShape ((pm :: Proxy m) :-- Nil) = show (natVal pm)
-showShape ((pm :: Proxy m) :-- s)   = show (natVal pm) ++ "," ++ showShape s
+showShape SNil                       = ""
+showShape ((pm :: Proxy m) :~> SNil) = show (natVal pm)
+showShape ((pm :: Proxy m) :~> s)    = show (natVal pm) ++ "," ++ showShape s
 
 instance Show (Shape s) where
     show s = "[" ++ (showShape s) ++ "]"
@@ -46,15 +51,15 @@ class MkShape (s :: [Nat]) where
   mkShape :: Shape s
 
 instance MkShape '[] where
-  mkShape = Nil
+  mkShape = SNil
 
 instance (MkShape s, KnownNat m) => MkShape (m ': s) where
-  mkShape = Proxy :-- mkShape
+  mkShape = Proxy :~> mkShape
 
 toUnsafe :: Shape s -> UnsafeShape
-toUnsafe Nil = UnsafeShape []
--- toUnsafe ((pm :: Proxy m) :-- s) = UnsafeShape (naturalToInt (natVal pm) : s')
-toUnsafe ((pm :: Proxy m) :-- s) = UnsafeShape (fromInteger (natVal pm) : s')
+toUnsafe SNil = UnsafeShape []
+-- toUnsafe ((pm :: Proxy m) :~> s) = UnsafeShape (naturalToInt (natVal pm) : s')
+toUnsafe ((pm :: Proxy m) :~> s) = UnsafeShape (fromInteger (natVal pm) : s')
     where
         (UnsafeShape s') = toUnsafe s
 
