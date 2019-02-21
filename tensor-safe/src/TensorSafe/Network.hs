@@ -1,22 +1,25 @@
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE FlexibleContexts      #-}
-{-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE GADTs                 #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE PolyKinds             #-}
+{-# LANGUAGE RoleAnnotations       #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE TupleSections         #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeOperators         #-}
+
 module TensorSafe.Network where
 
 
 import           Data.Singletons
-import           TensorSafe.Shape
+import           GHC.TypeLits
+-- import           TensorSafe.Shape
 
-class Layer x (i :: Shape s) (o :: Shape s1)
+data Shape = D1 Nat | D2 Nat Nat | D3 Nat Nat Nat
 
+class Layer x (i :: Shape) (o :: Shape)
 
-data Network :: [*] -> [Shape s] -> * where
+data Network :: [*] -> [Shape] -> * where
     NNil  :: SingI i
             => Network '[] '[i]
 
@@ -26,7 +29,23 @@ data Network :: [*] -> [Shape s] -> * where
             -> Network (x ': xs) (i ': h ': hs)
 infixr 5 :~~
 
-myShape :: Shape [28, 28, 1]
-myShape = buildShape [1, 3]
+data R (n :: Nat) where
+  R :: (KnownNat n) => R n
 
-type MyNet = Network '[ ] '[ 'SNil ]
+data L (m :: Nat) (n :: Nat) where
+  L :: (KnownNat m, KnownNat n) => L m n
+
+-- | A basic fully connected (or inner product) neural network layer.
+data FullyConnected (i :: Nat) (o :: Nat) = FullyConnected
+                        !(FullyConnected' i o)   -- Neuron weights
+                        !(FullyConnected' i o)   -- Neuron momentum
+
+data FullyConnected' (i :: Nat) (o :: Nat) = FullyConnected'
+                         !(R o)   -- Bias
+                         !(L o i) -- Activations
+
+instance Show (FullyConnected i o) where
+  show FullyConnected {} = "FullyConnected"
+
+data Logit = Logit
+  deriving Show
