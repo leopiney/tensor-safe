@@ -108,6 +108,11 @@ data FullyConnected' (i :: Nat) (o :: Nat) = FullyConnected'
 instance Show (FullyConnected i o) where
   show FullyConnected {} = "FullyConnected"
 
+instance (KnownNat i, KnownNat o) => Layer (FullyConnected i o) ('D1 i) ('D1 o) where
+  type Tape (FullyConnected i o) ('D1 i) ('D1 o) = R i
+
+  seal _ (S1D i) = (i, i)
+
 data Logit = Logit
   deriving Show
 
@@ -160,13 +165,3 @@ instance (SingI i) => ValidNetwork '[] '[i] where
 
 instance (SingI i, SingI o, Layer x i o, ValidNetwork xs (o ': rs)) => ValidNetwork (x ': xs) (i ': o ': rs) where
   validNetwork = validNetwork
-
-
-type MyNet =
-  Network
-  '[ Logit ]
-  '[ 'D1 28, 'D1 28 ]
-  -- '[ 'D1 28, 'D1 29 ] -- doen't work BITCHES!!!
-
-myNet :: MyNet
-myNet = validNetwork
