@@ -1,74 +1,72 @@
-{-# LANGUAGE DataKinds           #-}
-{-# LANGUAGE GADTs               #-}
-{-# LANGUAGE KindSignatures      #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeOperators       #-}
+{-# LANGUAGE CPP                  #-}
+{-# LANGUAGE DataKinds            #-}
+{-# LANGUAGE FlexibleContexts     #-}
+{-# LANGUAGE GADTs                #-}
+{-# LANGUAGE KindSignatures       #-}
+{-# LANGUAGE StandaloneDeriving   #-}
+{-# LANGUAGE TypeFamilies         #-}
+{-# LANGUAGE UndecidableInstances #-}
+module TensorSafe.Shape where
 
-module TensorSafe.Shape (
-    Shape(..),
-    UnsafeShape(..),
-    FixedShape(..),
-    buildShape,
-    fromUnsafe,
-    toUnsafe,
-) where
+import           Data.Singletons
+import           TensorSafe.Core
 
-import           Data.Maybe   (fromJust)
-import           Data.Proxy   (Proxy (..))
--- import           GHC.Natural  (naturalToInt)
--- import           GHC.TypeNats (KnownNat, Nat, natVal)
-import           GHC.TypeLits (KnownNat, Nat, natVal)
+#if MIN_VERSION_base(4, 11, 0)
+import           GHC.TypeLits    hiding (natVal)
+#else
+import           GHC.TypeLits
+#endif
 
-newtype UnsafeShape = UnsafeShape [Int] deriving (Eq, Show)
-
-data FixedShape
-  = D1 Nat
-  | D2 Nat Nat
-  | D3 Nat Nat Nat
+-- | The current shapes we accept.
+--   at the moment this is just one, two, and three dimensional
+--   Vectors/Matricies.
 --
--- Define the safe Shape data kind
+--   These are only used with DataKinds, as Kind `Shape`, with Types 'D1, 'D2, 'D3.
+data Shape
+    = D1 Nat
+    -- ^ One dimensional vector
+    | D2 Nat Nat
+    -- ^ Two dimensional matrix. Row, Column.
+    | D3 Nat Nat Nat
+    -- ^ Three dimensional matrix. Row, Column, Channels.
+
+-- | Concrete data structures for a Shape.
 --
-infixr 5 :~>
+--   All shapes are held in contiguous memory.
+--   3D is held in a matrix (usually row oriented) which has height depth * rows.
+data S (n :: Shape) where
+    S1D :: ( KnownNat len )
+        => R len
+        -> S ('D1 len)
 
-data Shape :: [Nat] -> * where
-    SNil :: Shape '[]
-    (:~>) :: KnownNat m => Proxy m -> Shape s -> Shape (m ': s)
+    S2D :: ( KnownNat rows, KnownNat columns )
+        => L rows columns
+        -> S ('D2 rows columns)
 
+    S3D :: ( KnownNat rows
+            , KnownNat columns
+            , KnownNat depth
+            , KnownNat (NatMult rows depth))
+        => L (NatMult rows depth) columns
+        -> S ('D3 rows columns depth)
 
-showShape :: (Shape s) -> String
-showShape SNil                       = ""
-showShape ((pm :: Proxy m) :~> SNil) = show (natVal pm)
-showShape ((pm :: Proxy m) :~> s)    = show (natVal pm) ++ "," ++ showShape s
+deriving instance Show (S n)
 
-instance Show (Shape s) where
-    show s = "[" ++ (showShape s) ++ "]"
-
+-- Singleton instances.
 --
--- Create a MkShape class that allows to convert a regular list
--- into a safe Shape
---
-class MkShape (s :: [Nat]) where
-  mkShape :: Shape s
+-- These could probably be derived with template haskell, but this seems
+-- clear and makes adding the KnownNat constraints simple.
+-- We can also keep our code TH free, which is great.
+data instance Sing (n :: Shape) where
+    D1Sing :: Sing a -> Sing ('D1 a)
+    D2Sing :: Sing a -> Sing b -> Sing ('D2 a b)
+    D3Sing :: KnownNat (NatMult a c) => Sing a -> Sing b -> Sing c -> Sing ('D3 a b c)
 
-instance MkShape '[] where
-  mkShape = SNil
+instance KnownNat a => SingI ('D1 a) where
+    sing = D1Sing sing
 
-instance (MkShape s, KnownNat m) => MkShape (m ': s) where
-  mkShape = Proxy :~> mkShape
+instance (KnownNat a, KnownNat b) => SingI ('D2 a b) where
+    sing = D2Sing sing sing
 
-toUnsafe :: Shape s -> UnsafeShape
-toUnsafe SNil = UnsafeShape []
--- toUnsafe ((pm :: Proxy m) :~> s) = UnsafeShape (naturalToInt (natVal pm) : s')
-toUnsafe ((pm :: Proxy m) :~> s) = UnsafeShape (fromInteger (natVal pm) : s')
-    where
-        (UnsafeShape s') = toUnsafe s
-
-fromUnsafe :: forall s. MkShape s => UnsafeShape -> Maybe (Shape s)
-fromUnsafe shape = if toUnsafe myShape == shape
-    then Just myShape
-    else Nothing
-    where
-        myShape = mkShape :: Shape s
-
-buildShape :: forall s. MkShape s => [Int] -> Shape s
-buildShape = fromJust . fromUnsafe . UnsafeShape
+instance (KnownNat a, KnownNat b, KnownNat c, KnownNat (NatMult a c)) => SingI ('D3 a b c) where
+    sing = D3Sing sing sing sing

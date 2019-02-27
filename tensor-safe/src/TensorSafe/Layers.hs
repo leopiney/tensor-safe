@@ -1,26 +1,30 @@
-{-# LANGUAGE DataKinds      #-}
-{-# LANGUAGE GADTs          #-}
-{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE AllowAmbiguousTypes   #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE GADTs                 #-}
+{-# LANGUAGE KindSignatures        #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeFamilies          #-}
 
-module TensorSafe.Layers where
+module TensorSafe.Layers (
+    LayerComponent (..),
+    Layer (..)
+) where
 
-import           GHC.TypeLits
+import           Data.Kind        (Type)
+import           TensorSafe.Shape
 
-import           TensorSafe.Core
 
-data Conv2D :: Nat -- number of channels (depth)
-            -> Nat -- number of filters
-            -> Nat -- number of rows in kernel filter
-            -> Nat -- number of cols in kernel filter
-            -> Nat -- the row stride in the conv filter
-            -> Nat -- the col stride in the conv filter
-            -> * where
-    Conv2D :: ( KnownNat channels
-              , KnownNat filters
-              , KnownNat kernelRows
-              , KnownNat kernelColumns
-              , KnownNat strideRows
-              , KnownNat strideColumns
-              , KnownNat kernelFlattened
-              , kernelFlattened ~ ShapeProduct [kernelRows, kernelColumns, channels])
-           => Conv2D channels filters kernelRows kernelColumns strideRows strideColumns
+-- | TODO
+class LayerComponent x where
+    layer :: x
+
+    {-# MINIMAL layer #-}
+
+-- | TODO
+class LayerComponent x => Layer x (i :: Shape) (o :: Shape) where
+    type Tape x i o :: Type
+
+    -- seal :: x -> S i -> (Tape x i o, S o)
+    seal :: x -> S i -> Tape x i o
+
+    {-# MINIMAL seal #-}

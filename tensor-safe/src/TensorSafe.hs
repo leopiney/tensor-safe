@@ -4,12 +4,14 @@
 module TensorSafe
     (
       someFunc,
-      someFunc2
+      someFunc2,
+      someFunc3
     ) where
 
-import           Data.Maybe        (Maybe, fromJust)
-import           TensorSafe.Shape
-import           TensorSafe.Tensor
+import           Data.Maybe                (Maybe, fromJust)
+import           TensorSafe.Example        (myNet)
+import           TensorSafe.Generic.Shape
+import           TensorSafe.Generic.Tensor
 
 someFunc :: IO ()
 someFunc =
@@ -56,3 +58,9 @@ someFunc2 =
         node_add                   = node1 `add` node2 in
     do
         putStrLn $ show node_add
+
+--
+someFunc3 :: IO ()
+someFunc3 =
+    do
+        putStrLn $ show myNet

@@ -10,9 +10,8 @@ module TensorSafe.Core where
 
 import           GHC.TypeLits
 
---
--- Natural number operations helpers
---
+
+-- | Natural number operations helpers
 type family NatMult (a :: Nat) (b :: Nat) :: Nat where
     NatMult a 0 = 0
     NatMult a b = a + a + NatMult a (b - 1)

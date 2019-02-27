@@ -6,12 +6,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 
-module TensorSafe.Tensor where
+module TensorSafe.Generic.Tensor where
 
-import           Data.Proxy       (Proxy (..))
+import           Data.Proxy               (Proxy (..))
 import           GHC.TypeLits
 
-import           TensorSafe.Shape
+import           TensorSafe.Generic.Shape
 
 --
 -- Define valid tensor types
