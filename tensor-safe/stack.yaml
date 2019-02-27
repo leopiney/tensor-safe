@@ -1,5 +1,8 @@
 flags: {}
 packages:
-- .
+  - .
 extra-deps: []
 resolver: lts-13.1
+
+ghc-options:
+  "$locals": -Werror -Wmissing-fields
