@@ -8,10 +8,11 @@ module TensorSafe
       someFunc3
     ) where
 
-import           Data.Maybe                (Maybe, fromJust)
-import           TensorSafe.Example        (myNet)
+import           Data.Maybe                        (Maybe, fromJust)
+import           TensorSafe.Examples.SimpleExample (myNet)
 import           TensorSafe.Generic.Shape
 import           TensorSafe.Generic.Tensor
+
 
 someFunc :: IO ()
 someFunc =

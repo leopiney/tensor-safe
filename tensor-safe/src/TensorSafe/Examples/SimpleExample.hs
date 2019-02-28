@@ -1,6 +1,6 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE GADTs     #-}
-module TensorSafe.Example where
+module TensorSafe.Examples.SimpleExample where
 
 
 import           TensorSafe.Layers.Logit
