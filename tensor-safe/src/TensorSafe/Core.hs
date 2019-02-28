@@ -14,7 +14,7 @@ import           GHC.TypeLits
 -- | Natural number operations helpers
 type family NatMult (a :: Nat) (b :: Nat) :: Nat where
     NatMult a 0 = 0
-    NatMult a b = a + a + NatMult a (b - 1)
+    NatMult a b = a + NatMult a (b - 1)
 
 
 type family ShapeProduct (s :: [Nat]) :: Nat
