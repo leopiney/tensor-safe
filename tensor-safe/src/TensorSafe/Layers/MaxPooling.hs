@@ -40,13 +40,7 @@ instance ( KnownNat kernelRows
          ) => Layer
               (MaxPooling kernelRows kernelColumns strideRows strideColumns)
               ('D2 inputRows inputColumns)
-              ('D2 outputRows outputColumns) where
-    type Tape
-         (MaxPooling kernelRows kernelColumns strideRows strideColumns)
-         ('D2 inputRows inputColumns)
-         ('D2 outputRows outputColumns) = ()
-
-    seal _ _ = ()
+              ('D2 outputRows outputColumns)
 
 instance ( KnownNat kernelRows
          , KnownNat kernelColumns
@@ -62,10 +56,4 @@ instance ( KnownNat kernelRows
          ) => Layer
               (MaxPooling kernelRows kernelColumns strideRows strideColumns)
               ('D3 inputRows inputColumns channels)
-              ('D3 outputRows outputColumns channels) where
-    type Tape
-         (MaxPooling kernelRows kernelColumns strideRows strideColumns)
-         ('D3 inputRows inputColumns channels)
-         ('D3 outputRows outputColumns channels) = ()
-
-    seal _ _ = ()
+              ('D3 outputRows outputColumns channels)

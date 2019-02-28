@@ -37,7 +37,4 @@ dummyDenseLayer = let
 instance (KnownNat i, KnownNat o) => LayerComponent (Dense i o) where
     layer = dummyDenseLayer
 
-instance (KnownNat i, KnownNat o) => Layer (Dense i o) ('D1 i) ('D1 o) where
-  type Tape (Dense i o) ('D1 i) ('D1 o) = ()
-
-  seal _ _ = ()
+instance (KnownNat i, KnownNat o) => Layer (Dense i o) ('D1 i) ('D1 o)

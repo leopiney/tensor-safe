@@ -48,13 +48,7 @@ instance ( KnownNat channels
          ) => Layer
               (Conv2D channels filters kernelRows kernelColumns strideRows strideColumns)
               ('D3 inputRows inputColumns channels)
-              ('D3 outputRows outputColumns filters) where
-    type Tape
-         (Conv2D channels filters kernelRows kernelColumns strideRows strideColumns)
-         ('D3 inputRows inputColumns channels)
-         ('D3 outputRows outputColumns filters) = ()
-
-    seal _ _ = ()
+              ('D3 outputRows outputColumns filters)
 
 instance ( KnownNat filters
          , KnownNat kernelRows
@@ -70,13 +64,7 @@ instance ( KnownNat filters
          ) => Layer
               (Conv2D 1 filters kernelRows kernelColumns strideRows strideColumns)
               ('D2 inputRows inputColumns)
-              ('D3 outputRows outputColumns filters) where
-    type Tape
-         (Conv2D 1 filters kernelRows kernelColumns strideRows strideColumns)
-         ('D2 inputRows inputColumns)
-         ('D3 outputRows outputColumns filters) = ()
-
-    seal _ _ = ()
+              ('D3 outputRows outputColumns filters)
 
 instance ( KnownNat kernelRows
          , KnownNat kernelColumns
@@ -91,13 +79,7 @@ instance ( KnownNat kernelRows
          ) => Layer
               (Conv2D 1 1 kernelRows kernelColumns strideRows strideColumns)
               ('D2 inputRows inputColumns)
-              ('D2 outputRows outputColumns) where
-    type Tape
-         (Conv2D 1 1 kernelRows kernelColumns strideRows strideColumns)
-         ('D2 inputRows inputColumns)
-         ('D2 outputRows outputColumns) = ()
-
-    seal _ _ = ()
+              ('D2 outputRows outputColumns)
 
 instance ( KnownNat channels
          , KnownNat kernelRows
@@ -113,10 +95,4 @@ instance ( KnownNat channels
          ) => Layer
               (Conv2D channels 1 kernelRows kernelColumns strideRows strideColumns)
               ('D3 inputRows inputColumns channels)
-              ('D2 outputRows outputColumns) where
-    type Tape
-         (Conv2D channels 1 kernelRows kernelColumns strideRows strideColumns)
-         ('D3 inputRows inputColumns channels)
-         ('D2 outputRows outputColumns) = ()
-
-    seal _ _ = ()
+              ('D2 outputRows outputColumns)

@@ -7,10 +7,9 @@
 
 module TensorSafe.Layers (
     LayerComponent (..),
-    Layer (..)
+    Layer
 ) where
 
-import           Data.Kind        (Type)
 import           TensorSafe.Shape
 
 
@@ -21,10 +20,4 @@ class LayerComponent x where
     {-# MINIMAL layer #-}
 
 -- | TODO
-class LayerComponent x => Layer x (i :: Shape) (o :: Shape) where
-    type Tape x i o :: Type
-
-    -- seal :: x -> S i -> (Tape x i o, S o)
-    seal :: x -> S i -> Tape x i o
-
-    {-# MINIMAL seal #-}
+class LayerComponent x => Layer x (i :: Shape) (o :: Shape)
