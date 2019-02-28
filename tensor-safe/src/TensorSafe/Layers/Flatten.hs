@@ -5,7 +5,6 @@
 {-# LANGUAGE TypeFamilies          #-}
 module TensorSafe.Layers.Flatten (Flatten) where
 
-import           Data.Singletons
 import           GHC.TypeLits
 import           TensorSafe.Core   (NatMult)
 import           TensorSafe.Layers
