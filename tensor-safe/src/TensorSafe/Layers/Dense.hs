@@ -23,8 +23,11 @@ data Dense' (i :: Nat) (o :: Nat) = Dense'
                          !(R o)   -- Bias
                          !(L o i) -- Activations
 
-instance Show (Dense i o) where
-  show Dense {} = "Dense"
+instance (KnownNat i, KnownNat o) => Show (Dense' i o) where
+  show (Dense' o i) = "(" ++ show i ++ ", " ++ show o ++ ")"
+
+instance (KnownNat i, KnownNat o) => Show (Dense i o) where
+  show (Dense o i) = "Dense " ++ show i ++ " " ++ show o
 
 dummyDenseLayer :: (KnownNat i, KnownNat o) => Dense i o
 dummyDenseLayer = let

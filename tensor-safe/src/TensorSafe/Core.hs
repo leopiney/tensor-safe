@@ -8,6 +8,7 @@
 
 module TensorSafe.Core where
 
+import           Data.Typeable (typeOf)
 import           GHC.TypeLits
 
 
@@ -25,11 +26,12 @@ type instance ShapeProduct (m ': s) = NatMult m (ShapeProduct s)
 data R (n :: Nat) where
     R :: (KnownNat n) => R n
 
-instance Show (R n) where
-    show = Prelude.show
+instance KnownNat n => Show (R n) where
+    show = show . typeOf
 
 data L (m :: Nat) (n :: Nat) where
     L :: (KnownNat m, KnownNat n) => L m n
 
-instance Show (L m n) where
-    show = Prelude.show
+instance (KnownNat m, KnownNat n) => Show (L m n) where
+    show = show . typeOf
+

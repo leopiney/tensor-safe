@@ -32,7 +32,7 @@ instance Show (Network '[] '[i]) where
   show NNil = "NNil"
 
 instance (Show x, Show (Network xs rs)) => Show (Network (x ': xs) (i ': rs)) where
-  show (x :~~ xs) = show x ++ " :~~ " ++ show xs
+  show (x :~~ xs) = show x ++ "\n :~~ " ++ show xs
 
 -- | TODO
 class ValidNetwork (xs :: [Type]) (ss :: [Shape]) where
