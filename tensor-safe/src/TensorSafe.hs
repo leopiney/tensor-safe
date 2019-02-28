@@ -1,21 +1,22 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module TensorSafe
-    (
-      someFunc,
-      someFunc2,
-      someFunc3
-    ) where
+module TensorSafe (
+    genericTensorExample,
+    genericTensorExample2,
+    simpleExample,
+    mnistExample
+) where
 
 import           Data.Maybe                        (Maybe, fromJust)
+import           TensorSafe.Examples.MnistExample  (mnist)
 import           TensorSafe.Examples.SimpleExample (myNet)
 import           TensorSafe.Generic.Shape
 import           TensorSafe.Generic.Tensor
 
 
-someFunc :: IO ()
-someFunc =
+genericTensorExample :: IO ()
+genericTensorExample =
     let
         (shape1 :: Shape [1,3]) = buildShape [1,3]
         (shape2bad :: Maybe (Shape [3,1])) = fromUnsafe (UnsafeShape [3,3])
@@ -49,8 +50,8 @@ someFunc =
 -- node2 = tf.constant([4.0, 16.0], dtype=tf.float32)
 -- additionNode = tf.add(node1, node2)
 --
-someFunc2 :: IO ()
-someFunc2 =
+genericTensorExample2 :: IO ()
+genericTensorExample2 =
     let
         node1_shp :: Shape [1, 3] = buildShape [1, 3]
         node1                      = constant DT_FLOAT node1_shp
@@ -61,7 +62,13 @@ someFunc2 =
         putStrLn $ show node_add
 
 --
-someFunc3 :: IO ()
-someFunc3 =
+simpleExample :: IO ()
+simpleExample =
     do
         putStrLn $ show myNet
+
+mnistExample :: IO ()
+mnistExample =
+    do
+        putStrLn $ show mnist
+
