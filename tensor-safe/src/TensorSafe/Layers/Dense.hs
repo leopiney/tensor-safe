@@ -14,10 +14,10 @@ import           TensorSafe.Layers
 import           TensorSafe.Shape
 
 
--- -- | A basic fully connected (or inner product) neural network layer.
+-- | TODO
 data Dense (i :: Nat) (o :: Nat) = Dense
-                        !(Dense' i o)   -- Neuron weights
-                        !(Dense' i o)   -- Neuron momentum
+                        !(Dense' i o)
+                        !(Dense' i o)
 
 data Dense' (i :: Nat) (o :: Nat) = Dense'
                          !(R o)   -- Bias
@@ -29,6 +29,7 @@ instance (KnownNat i, KnownNat o) => Show (Dense' i o) where
 instance (KnownNat i, KnownNat o) => Show (Dense i o) where
   show (Dense o i) = "Dense " ++ show i ++ " " ++ show o
 
+-- | TODO
 dummyDenseLayer :: (KnownNat i, KnownNat o) => Dense i o
 dummyDenseLayer = let
     wB = R

@@ -26,7 +26,7 @@ type MyNet = Network
                  'D1 10,
                  'D1 10,
                  'D1 10
-                --  'D1 11 -- doen't work BITCHES!!!
+                --  'D1 11 -- doesn't work BITCHES!!!
               ]
 
 myNet :: MyNet

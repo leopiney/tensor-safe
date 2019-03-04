@@ -29,3 +29,27 @@ Conv2D :: Nat -- number of channels (depth)
        -> Nat -- the col stride in the conv filter
        -> *
 ```
+
+## Current working examples
+
+Checkout the `TensorSafe.Examples` module:
+
+```haskell
+type MyNet = Network
+             '[
+                 MaxPooling 2 2 2 2,
+                 Flatten,
+                 Dense 196 10,
+                 Logit,
+                 Relu
+              ]
+             '[
+                 'D2 28 28,
+                 'D2 14 14,
+                 'D1 196,
+                 'D1 10,
+                 'D1 10,
+                 'D1 10
+                --  'D1 11 -- doesn't work!!!
+              ]
+```

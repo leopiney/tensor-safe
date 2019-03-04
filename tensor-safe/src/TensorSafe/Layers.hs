@@ -12,7 +12,6 @@ module TensorSafe.Layers (
 
 import           TensorSafe.Shape
 
-
 -- | TODO
 class LayerComponent x where
     layer :: x

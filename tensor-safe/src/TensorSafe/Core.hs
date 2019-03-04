@@ -22,13 +22,14 @@ type family ShapeProduct (s :: [Nat]) :: Nat
 type instance ShapeProduct '[] = 1
 type instance ShapeProduct (m ': s) = NatMult m (ShapeProduct s)
 
-
+-- | Wrapper for a Nat value
 data R (n :: Nat) where
     R :: (KnownNat n) => R n
 
 instance KnownNat n => Show (R n) where
     show = show . typeOf
 
+-- | Wrapper for a tuple of 2 Nat values
 data L (m :: Nat) (n :: Nat) where
     L :: (KnownNat m, KnownNat n) => L m n
 

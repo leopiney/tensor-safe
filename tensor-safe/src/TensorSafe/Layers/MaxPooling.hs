@@ -19,21 +19,17 @@ import           TensorSafe.Core
 import           TensorSafe.Layers
 import           TensorSafe.Shape
 
-
-newtype P e = P e
-
-
+-- | TODO
 data MaxPooling :: Nat -> Nat -> Nat -> Nat -> Type where
     MaxPooling :: MaxPooling kernelRows kernelColumns strideRows strideColumns
 
 instance (KnownNat k, KnownNat k', KnownNat s, KnownNat s') => Show (MaxPooling k k' s s') where
     show = show . typeOf
 
-
 instance (KnownNat k, KnownNat k', KnownNat s, KnownNat s') => LayerComponent (MaxPooling k k' s s') where
     layer = MaxPooling
 
-
+-- | TODO
 instance ( KnownNat kernelRows
          , KnownNat kernelColumns
          , KnownNat strideRows

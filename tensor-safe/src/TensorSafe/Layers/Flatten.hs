@@ -10,12 +10,13 @@ import           TensorSafe.Core   (NatMult)
 import           TensorSafe.Layers
 import           TensorSafe.Shape
 
-
+-- | TODO
 data Flatten = Flatten deriving Show
 
 instance LayerComponent Flatten where
     layer = Flatten
 
+-- | TODO
 instance (KnownNat i) => Layer Flatten ('D1 i) ('D1 i)
 
 instance ( KnownNat a

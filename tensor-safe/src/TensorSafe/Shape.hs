@@ -17,6 +17,10 @@ import           GHC.TypeLits    hiding (natVal)
 import           GHC.TypeLits
 #endif
 
+--
+-- Shape definition as in Haskell's Grenade library
+--
+
 -- | The current shapes we accept.
 --   at the moment this is just one, two, and three dimensional
 --   Vectors/Matricies.
@@ -53,6 +57,7 @@ data S (n :: Shape) where
 deriving instance Show (S n)
 
 -- Singleton instances.
+-- Check: http://hackage.haskell.org/package/singletons
 --
 -- These could probably be derived with template haskell, but this seems
 -- clear and makes adding the KnownNat constraints simple.

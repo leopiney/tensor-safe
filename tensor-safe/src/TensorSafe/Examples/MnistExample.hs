@@ -43,3 +43,4 @@ type MNIST = Network
 
 mnist :: MNIST
 mnist = validNetwork
+

@@ -12,6 +12,7 @@ module TensorSafe.Generic.Shape (
     toUnsafe,
 ) where
 
+import           Data.Kind    (Type)
 import           Data.Maybe   (fromJust)
 import           Data.Proxy   (Proxy (..))
 import           GHC.TypeLits (KnownNat, Nat, natVal)
@@ -23,7 +24,7 @@ newtype UnsafeShape = UnsafeShape [Int] deriving (Eq, Show)
 --
 infixr 5 :~>
 
-data Shape :: [Nat] -> * where
+data Shape :: [Nat] -> Type where
     SNil :: Shape '[]
     (:~>) :: KnownNat m => Proxy m -> Shape s -> Shape (m ': s)
 
