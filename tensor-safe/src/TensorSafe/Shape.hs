@@ -60,7 +60,7 @@ deriving instance Show (S n)
 data instance Sing (n :: Shape) where
     D1Sing :: Sing a -> Sing ('D1 a)
     D2Sing :: Sing a -> Sing b -> Sing ('D2 a b)
-    D3Sing :: KnownNat (NatMult a c) => Sing a -> Sing b -> Sing c -> Sing ('D3 a b c)
+    D3Sing :: Sing a -> Sing b -> Sing c -> Sing ('D3 a b c)
 
 instance KnownNat a => SingI ('D1 a) where
     sing = D1Sing sing
@@ -68,5 +68,5 @@ instance KnownNat a => SingI ('D1 a) where
 instance (KnownNat a, KnownNat b) => SingI ('D2 a b) where
     sing = D2Sing sing sing
 
-instance (KnownNat a, KnownNat b, KnownNat c, KnownNat (NatMult a c)) => SingI ('D3 a b c) where
+instance (KnownNat a, KnownNat b, KnownNat c) => SingI ('D3 a b c) where
     sing = D3Sing sing sing sing
