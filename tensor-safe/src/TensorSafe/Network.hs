@@ -44,5 +44,9 @@ class ValidNetwork (xs :: [Type]) (ss :: [Shape]) where
 instance (SingI i) => ValidNetwork '[] '[i] where
   validNetwork = NNil
 
-instance (SingI i, SingI o, Layer x i o, ValidNetwork xs (o ': rs)) => ValidNetwork (x ': xs) (i ': o ': rs) where
+instance ( SingI i
+         , SingI o
+         , Layer x i o
+         , ValidNetwork xs (o ': rs)
+         ) => ValidNetwork (x ': xs) (i ': o ': rs) where
   validNetwork = layer :~~ validNetwork
