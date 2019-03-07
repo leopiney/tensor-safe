@@ -40,5 +40,6 @@ dummyDenseLayer = let
 
 instance (KnownNat i, KnownNat o) => LayerComponent (Dense i o) where
     layer = dummyDenseLayer
+    compile (Dense _ (Dense' i _)) = "model.add(tf.layers.dense({units: " ++ show i ++ "})"
 
 instance (KnownNat i, KnownNat o) => Layer (Dense i o) ('D1 i) ('D1 o)

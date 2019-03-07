@@ -52,35 +52,3 @@ instance ( SingI i
          ) => ValidNetwork (x ': xs) (i ': o ': rs) where
   validNetwork = layer :~~ validNetwork
 
--- asdf :: Type -> String
--- asdf _ = "asdf"
--- compile :: forall layers shapes. Network layers shapes -> S (Head shapes) -> String
--- compile (l :~~ n) !x = asdf (layer l)
-  -- comp
-  --   where
-  -- comp :: forall xs ss. (Last ss ~ Last shapes)
-  --      => Network xs ss -> S (Head ss) -> String
-  -- comp NNil !x = "Nil"
-
--- compile (x :~~ n) =
---   comp
---     where
---   comp ::
--- runNetwork :: forall layers shapes.
---               Network layers shapes
---            -> S (Head shapes)
---            -> (Tapes layers shapes, S (Last shapes))
--- runNetwork =
---   go
---     where
---   go  :: forall js ss. (Last js ~ Last shapes)
---       => Network ss js
---       -> S (Head js)
---       -> (Tapes ss js, S (Last js))
---   go (layer :~> n) !x =
---     let (tape, forward) = runForwards layer x
---         (tapes, answer) = go n forward
---     in  (tape :\> tapes, answer)
-
---   go NNil !x
---       = (TNil, x)

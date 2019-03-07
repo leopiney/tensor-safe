@@ -38,6 +38,12 @@ instance ( KnownNat c
          , KnownNat s'
          ) => LayerComponent (Conv2D c f k k' s s') where
     layer = Conv2D
+    compile c =
+        "model.add(tf.layers.conv2d({kernelSize: " ++
+        show (natVal c) ++
+        ", filters: " ++
+        show (natVal c) ++
+        "}));"
 
 
 instance ( KnownNat channels

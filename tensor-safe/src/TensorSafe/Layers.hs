@@ -15,8 +15,9 @@ import           TensorSafe.Shape
 -- | TODO
 class LayerComponent x where
     layer :: x
+    compile :: x -> String
 
-    {-# MINIMAL layer #-}
+    {-# MINIMAL compile, layer #-}
 
 -- | TODO
 class LayerComponent x => Layer x (i :: Shape) (o :: Shape)

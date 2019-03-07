@@ -28,6 +28,12 @@ instance (KnownNat k, KnownNat k', KnownNat s, KnownNat s') => Show (MaxPooling 
 
 instance (KnownNat k, KnownNat k', KnownNat s, KnownNat s') => LayerComponent (MaxPooling k k' s s') where
     layer = MaxPooling
+    compile k =
+        "model.add(tf.layers.maxPooling2d({poolSize: " ++
+        show (natVal k) ++
+        ", strides: " ++
+        show(natVal k) ++
+        "}))"
 
 -- | TODO
 instance ( KnownNat kernelRows
