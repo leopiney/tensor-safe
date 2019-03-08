@@ -53,9 +53,12 @@ type family ComputeOut (s :: Shape) (layers :: [Type]) :: Shape where
     ComputeOut s '[]      = s
     ComputeOut s (l : ls) = ComputeOut (Out s l) ls
 
+type family ComposeOut' (s :: Shape) (layers :: [Type]) :: [Shape] where
+    ComposeOut' s '[]      = '[s]
+    ComposeOut' s (l : ls) = ((Out s l) ': (ComposeOut' (Out s l) ls))
+
 type family ComposeOut (s :: Shape) (layers :: [Type]) :: [Shape] where
-    ComputeOut s '[]      = '[s]
-    ComputeOut s (l : ls) = (s ': (ComposeOut s ls))
+    ComposeOut s ls = s ': (ComposeOut' s ls)
 
 
 type MyNet2Layers = '[ Relu, Sigmoid, Flatten ]
