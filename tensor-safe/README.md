@@ -53,3 +53,46 @@ type MyNet = Network
                 --  'D1 11 -- doesn't work!!!
               ]
 ```
+
+## New desirable example
+
+Since for the way of building Networks with the instanciated shapes is a bit tricky and also
+pretty annoying for the developers, it would be nicer to define a Generic Network type which
+defines just the Layers concatenation type like:
+
+```haskell
+type MyNetwork = Network
+               '[
+                   MaxPooling 2 2 2 2,
+                   Flatten,
+                   Dense 196 10,
+                   Logit,
+                   Relu
+                ]
+```
+
+With this and an input shape, then we could create a type function capable of returning all the
+expected outputs of the network. For instance:
+
+```haskell
+type MyNetworkShapeFlow = ShapeFlow MyNetwork ('D2 28 28)
+-- :t MyNetworkShapeFlow = '[
+--                         'D2 28 28,
+--                         'D2 14 14,
+--                         'D1 196,
+--                         'D1 10,
+--                         'D1 10,
+--                         'D1 10
+--                       ]
+```
+
+So that we can create an instance of a Network like so:
+
+```haskell
+createNetwork :: (net :: Netowork layers) -> (in :: Shape) -> INetwork layers (ShapeFlow MyNetwork in)
+
+
+net  :: MyNetwork
+iNet :: INetwork '[ layers ] '[ outputs ]
+iNet = createNetwork n (proxy ('D2 28 28))
+```

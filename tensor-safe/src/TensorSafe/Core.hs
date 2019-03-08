@@ -18,6 +18,11 @@ type family NatMult (a :: Nat) (b :: Nat) :: Nat where
     NatMult a 0 = 0
     NatMult a b = a + NatMult a (b - 1)
 
+type family NatMult3 (a :: Nat) (b :: Nat) (c :: Nat) :: Nat where
+    NatMult3 a b 0 = 0
+    NatMult3 a 0 c = 0
+    NatMult3 a b c = NatMult c (NatMult a b)
+
 
 type family ShapeProduct (s :: [Nat]) :: Nat
 type instance ShapeProduct '[] = 1
