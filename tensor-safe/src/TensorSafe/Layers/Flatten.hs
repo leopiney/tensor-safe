@@ -15,6 +15,7 @@ data Flatten = Flatten deriving Show
 
 instance LayerComponent Flatten where
     layer = Flatten
+    compile _ = "model.add(tf.layers.flatten())"
 
 -- | TODO
 instance (KnownNat i) => Layer Flatten ('D1 i) ('D1 i)

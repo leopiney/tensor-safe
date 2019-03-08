@@ -13,6 +13,7 @@ module TensorSafe.Network where
 
 import           Data.Kind         (Type)
 import           Data.Singletons
+-- import           Data.Singletons.Prelude
 
 import           TensorSafe.Layers
 import           TensorSafe.Shape
@@ -50,3 +51,4 @@ instance ( SingI i
          , ValidNetwork xs (o ': rs)
          ) => ValidNetwork (x ': xs) (i ': o ': rs) where
   validNetwork = layer :~~ validNetwork
+

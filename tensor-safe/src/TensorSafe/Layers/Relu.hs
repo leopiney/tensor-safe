@@ -12,6 +12,7 @@ data Relu = Relu deriving Show
 
 instance LayerComponent Relu where
     layer = Relu
+    compile _ = "model.add(tf.layers.reLU())"
 
 -- | TODO
 instance (SingI a) => Layer Relu a a
