@@ -73,4 +73,3 @@ mnistExample =
     do
         putStrLn $ show mnist
         putStrLn $ compileNetwork mnist
-

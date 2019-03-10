@@ -3,7 +3,8 @@ module Main where
 import           TensorSafe
 
 main :: IO ()
--- main = genericTensorExample
--- main = genericTensorExample2
--- main = simpleExample
-main = mnistExample
+main = do
+    genericTensorExample
+    genericTensorExample2
+    simpleExample
+    mnistExample

@@ -5,30 +5,30 @@ module TensorSafe.Examples.SimpleExample where
 
 import           TensorSafe.Layers.Dense
 import           TensorSafe.Layers.Flatten
-import           TensorSafe.Layers.Logit
 import           TensorSafe.Layers.MaxPooling
 import           TensorSafe.Layers.Relu
-import           TensorSafe.Network
+import           TensorSafe.Layers.Sigmoid
+import           TensorSafe.Network           (validNetwork)
 import           TensorSafe.Shape
+import           TensorSafe.Types.Network     (MkValidINetwork)
 
-type MyNet = Network
-             '[
-                 MaxPooling 2 2 2 2,
-                 Flatten,
-                 Dense 196 10,
-                 Logit,
-                 Relu
-              ]
-             '[
-                 'D2 28 28,
-                 'D2 14 14,
-                 'D1 196,
-                 'D1 10,
-                 'D1 10,
-                 'D1 10
-                --  'D1 11 -- doesn't work BITCHES!!!
-              ]
 
+type MyNet = MkValidINetwork '[ Sigmoid, Flatten, Relu, Flatten ] ('D2 28 28) ('D1 784)
 myNet :: MyNet
 myNet = validNetwork
 
+type MyNet2 = MkValidINetwork '[ Sigmoid, Flatten, Dense 784 80, Relu, Flatten ] ('D2 28 28) ('D1 80)
+myNet2 :: MyNet2
+myNet2 = validNetwork
+
+myNet3 :: MkValidINetwork
+       '[
+          MaxPooling 2 2 2 2,
+          Flatten,
+          Dense 196 10,
+          Sigmoid,
+          Relu
+        ]
+        ('D2 28 28)
+        ('D1 10)
+myNet3 = validNetwork

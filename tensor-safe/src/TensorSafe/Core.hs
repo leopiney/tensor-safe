@@ -1,32 +1,27 @@
 {-# LANGUAGE DataKinds            #-}
 {-# LANGUAGE GADTs                #-}
-{-# LANGUAGE KindSignatures       #-}
-{-# LANGUAGE ScopedTypeVariables  #-}
 {-# LANGUAGE TypeFamilies         #-}
 {-# LANGUAGE TypeOperators        #-}
 {-# LANGUAGE UndecidableInstances #-}
-
 module TensorSafe.Core where
 
--- import           Data.Proxy    (Proxy (..))
--- import           Data.Typeable (typeOf)
 import           GHC.TypeLits
 
-
--- | Natural number operations helpers
+-- | Multiplies two natural numbers
 type family NatMult (a :: Nat) (b :: Nat) :: Nat where
     NatMult a 0 = 0
     NatMult a b = a + NatMult a (b - 1)
 
+-- | Multiplies three natural numbers
 type family NatMult3 (a :: Nat) (b :: Nat) (c :: Nat) :: Nat where
     NatMult3 a b 0 = 0
     NatMult3 a 0 c = 0
     NatMult3 a b c = NatMult c (NatMult a b)
 
-
-type family ShapeProduct (s :: [Nat]) :: Nat
-type instance ShapeProduct '[] = 1
-type instance ShapeProduct (m ': s) = NatMult m (ShapeProduct s)
+-- | Multiplies all numbers on a list of natural numbers
+type family ShapeProduct (s :: [Nat]) :: Nat where
+    ShapeProduct '[] = 1
+    ShapeProduct (m ': s) = NatMult m (ShapeProduct s)
 
 -- | Wrapper for a Nat value
 data R (n :: Nat) where

@@ -4,14 +4,11 @@ module TensorSafe.Compiler (
     compileNetwork
 ) where
 
-import           TensorSafe.Layers  (compile)
+import           TensorSafe.Layer   (compile)
 import           TensorSafe.Network
 
-compileNetwork' :: Network xs ss -> String
-compileNetwork' NNil      = ""
-compileNetwork' (l :~~ n) = compile l ++ "\n  " ++ compileNetwork' n
-
-compileNetwork :: Network xs ss -> String
+-- | TODO
+compileNetwork :: INetwork xs ss -> String
 compileNetwork n =
     "import * as tf from '@tensorflow/tfjs';\n\
     \\n\
@@ -22,3 +19,8 @@ compileNetwork n =
     \  " ++ compileNetwork' n ++ "\n\
     \  return model\n\
     \}\n"
+
+-- | TODO
+compileNetwork' :: INetwork xs ss -> String
+compileNetwork' INNil     = ""
+compileNetwork' (l :~> n) = compile l ++ "\n  " ++ compileNetwork' n
