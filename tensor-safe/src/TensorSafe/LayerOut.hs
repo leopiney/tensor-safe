@@ -83,3 +83,13 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
     --
     --
     Out Sigmoid s           = s
+
+    --
+    -- Edge case or not defined raise an error
+    --
+    Out l sOut =
+        TypeError ( 'Text "Couldn't apply the Layer \""
+              ':<>: 'ShowType l
+              ':<>: 'Text "\" with the output Shape \""
+              ':<>: 'ShowType sOut
+              ':<>: 'Text "\"")

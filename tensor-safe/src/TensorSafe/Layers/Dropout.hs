@@ -3,7 +3,6 @@
 {-# LANGUAGE KindSignatures #-}
 module TensorSafe.Layers.Dropout (Dropout) where
 
-
 import           Data.Kind        (Type)
 import           GHC.TypeLits
 
