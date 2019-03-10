@@ -17,16 +17,16 @@ import           TensorSafe.Shape
 import           TensorSafe.Types.Layer
 
 -- | TODO
-type family MkINetwork (layers :: [Type]) (s :: Shape) :: Type where
-    MkINetwork ls s = INetwork ls (ComposeOut ls s)
+type family MkINetworkUnsafe (layers :: [Type]) (s :: Shape) :: Type where
+    MkINetworkUnsafe ls s = INetwork ls (ComposeOut ls s)
 
 -- | TODO
-type family MaybeValidINetwork (net :: Type) (sOut :: Shape ) (b :: Bool) :: Type where
-    MaybeValidINetwork net sOut 'False =
+type family MaybeINetwork (net :: Type) (sOut :: Shape ) (b :: Bool) :: Type where
+    MaybeINetwork net sOut 'False =
         Type -- HACK: ValidateOutput should raise an exception on this case
-    MaybeValidINetwork net sOut 'True  = net
+    MaybeINetwork net sOut 'True  = net
 
 -- | TODO
-type family MkValidINetwork (layers :: [Type]) (sIn :: Shape) (sOut :: Shape) :: Type where
-    MkINetwork ls sIn sOut =
-        MaybeValidINetwork (INetwork ls (ComposeOut ls sIn)) sOut (ValidateOutput ls sIn sOut)
+type family MkINetwork (layers :: [Type]) (sIn :: Shape) (sOut :: Shape) :: Type where
+    MkINetworkUnsafe ls sIn sOut =
+        MaybeINetwork (INetwork ls (ComposeOut ls sIn)) sOut (ValidateOutput ls sIn sOut)

@@ -52,18 +52,18 @@ instance Show (INetwork '[] '[i]) where
 instance (Show x, Show (INetwork xs rs)) => Show (INetwork (x ': xs) (i ': rs)) where
   show (x :~> xs) = show x ++ "\n :~> " ++ show xs
 
--- | Instanciates a Network after defining a type definition, using MkINetwork for example.
+-- | Instanciates a Network after defining a type definition, using MkINetworkUnsafe for example.
 --   After defining a variable with INetwork type, you can instanciate that variable like this:
 --
 --   myNet :: MNIST
---   myNet = validNetwork
+--   myNet = mkINetwork
 class ValidNetwork (xs :: [Type]) (ss :: [Shape]) where
-  validNetwork :: INetwork xs ss
+  mkINetwork :: INetwork xs ss
 
-  {-# MINIMAL validNetwork #-}
+  {-# MINIMAL mkINetwork #-}
 
 instance (SingI i) => ValidNetwork '[] '[i] where
-  validNetwork = INNil
+  mkINetwork = INNil
 
 instance ( SingI i
          , SingI o
@@ -72,6 +72,6 @@ instance ( SingI i
          , (Out x i) ~ o -- IMPORTANT: validation that the output and the computation of the layer
                          -- will match. Without this constraint we could be able to create an
                          -- instance of ValidNetwork that doesn't satisfies the type constraints
-                         -- of MkValidINetwork for example.
+                         -- of MkINetwork for example.
          ) => ValidNetwork (x ': xs) (i ': o ': rs) where
-    validNetwork = layer :~> validNetwork
+    mkINetwork = layer :~> mkINetwork

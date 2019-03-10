@@ -8,20 +8,20 @@ import           TensorSafe.Layers.Flatten
 import           TensorSafe.Layers.MaxPooling
 import           TensorSafe.Layers.Relu
 import           TensorSafe.Layers.Sigmoid
-import           TensorSafe.Network           (validNetwork)
+import           TensorSafe.Network           (mkINetwork)
 import           TensorSafe.Shape
-import           TensorSafe.Types.Network     (MkValidINetwork)
+import           TensorSafe.Types.Network     (MkINetwork)
 
 
-type MyNet = MkValidINetwork '[ Sigmoid, Flatten, Relu, Flatten ] ('D2 28 28) ('D1 784)
+type MyNet = MkINetwork '[ Sigmoid, Flatten, Relu, Flatten ] ('D2 28 28) ('D1 784)
 myNet :: MyNet
-myNet = validNetwork
+myNet = mkINetwork
 
-type MyNet2 = MkValidINetwork '[ Sigmoid, Flatten, Dense 784 80, Relu, Flatten ] ('D2 28 28) ('D1 80)
+type MyNet2 = MkINetwork '[ Sigmoid, Flatten, Dense 784 80, Relu, Flatten ] ('D2 28 28) ('D1 80)
 myNet2 :: MyNet2
-myNet2 = validNetwork
+myNet2 = mkINetwork
 
-myNet3 :: MkValidINetwork
+myNet3 :: MkINetwork
        '[
           MaxPooling 2 2 2 2,
           Flatten,
@@ -31,4 +31,4 @@ myNet3 :: MkValidINetwork
         ]
         ('D2 28 28)
         ('D1 10)
-myNet3 = validNetwork
+myNet3 = mkINetwork

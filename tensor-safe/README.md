@@ -89,10 +89,10 @@ type MyNetworkShapeFlow = ShapeFlow MyNetwork ('D2 28 28)
 So that we can create an instance of a Network like so:
 
 ```haskell
-createNetwork :: (net :: Netowork layers) -> (in :: Shape) -> INetwork layers (ShapeFlow MyNetwork in)
+mkINetwork :: (net :: Netowork layers) -> (in :: Shape) -> INetwork layers (ShapeFlow MyNetwork in)
 
 
 net  :: MyNetwork
 iNet :: INetwork '[ layers ] '[ outputs ]
-iNet = createNetwork n (proxy ('D2 28 28))
+iNet = mkINetwork n (proxy ('D2 28 28))
 ```

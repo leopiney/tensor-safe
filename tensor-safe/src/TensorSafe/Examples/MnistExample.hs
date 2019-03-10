@@ -9,11 +9,11 @@ import           TensorSafe.Layers.Flatten
 import           TensorSafe.Layers.MaxPooling
 import           TensorSafe.Layers.Relu
 import           TensorSafe.Layers.Sigmoid
-import           TensorSafe.Network           (validNetwork)
+import           TensorSafe.Network           (mkINetwork)
 import           TensorSafe.Shape
-import           TensorSafe.Types.Network     (MkValidINetwork)
+import           TensorSafe.Types.Network     (MkINetwork)
 
-type MNIST = MkValidINetwork
+type MNIST = MkINetwork
     '[
         Conv2D 1 10 5 5 1 1,
         MaxPooling 2 2 2 2,
@@ -31,4 +31,4 @@ type MNIST = MkValidINetwork
     ('D1 10)        -- Output
 
 mnist :: MNIST
-mnist = validNetwork
+mnist = mkINetwork
