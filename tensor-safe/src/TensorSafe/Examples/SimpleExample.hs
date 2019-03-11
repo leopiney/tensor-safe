@@ -3,14 +3,9 @@
 module TensorSafe.Examples.SimpleExample where
 
 
-import           TensorSafe.Layers.Dense
-import           TensorSafe.Layers.Flatten
-import           TensorSafe.Layers.MaxPooling
-import           TensorSafe.Layers.Relu
-import           TensorSafe.Layers.Sigmoid
-import           TensorSafe.Network           (mkINetwork)
+import           TensorSafe.Layers
+import           TensorSafe.Network (MkINetwork, mkINetwork)
 import           TensorSafe.Shape
-import           TensorSafe.Types.Network     (MkINetwork)
 
 
 type MyNet = MkINetwork '[ Sigmoid, Flatten, Relu, Flatten ] ('D2 28 28) ('D1 784)
