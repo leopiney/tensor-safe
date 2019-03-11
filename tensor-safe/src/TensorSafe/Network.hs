@@ -11,44 +11,67 @@
 
 module TensorSafe.Network where
 
-import           Data.Kind         (Type)
+import           Data.Kind           (Type)
 import           Data.Singletons
--- import           Data.Singletons.Prelude
 
-import           TensorSafe.Layers
+import           TensorSafe.Layer
+import           TensorSafe.LayerOut (Out)
 import           TensorSafe.Shape
 
--- | TODO
-data Network :: [Type] -> [Shape] -> Type where
-    NNil  :: SingI i
-            => Network '[] '[i]
+-- | A network that defines a specific sequence of layers
+data Network :: [Type] -> Type where
+  NNil  :: Network '[]
 
-    (:~~) :: (SingI i, SingI h, Layer x i h)
-            => !x
-            -> !(Network xs (h ': hs))
-            -> Network (x ': xs) (i ': h ': hs)
+  (:~~) :: Layer x
+        => !x
+        -> !(Network xs)
+        -> Network (x ': xs)
 infixr 5 :~~
 
-
-instance Show (Network '[] '[i]) where
+instance Show (Network '[]) where
   show NNil = "NNil"
 
-instance (Show x, Show (Network xs rs)) => Show (Network (x ': xs) (i ': rs)) where
+instance (Show x, Show (Network xs)) => Show (Network (x ': xs)) where
   show (x :~~ xs) = show x ++ "\n :~~ " ++ show xs
 
--- | TODO
-class ValidNetwork (xs :: [Type]) (ss :: [Shape]) where
-  validNetwork :: Network xs ss
+-- | A network that defines a specific sequence of layers with the corresponding shape
+--   transformation along the network.
+data INetwork :: [Type] -> [Shape] -> Type where
+  INNil  :: SingI i
+          => INetwork '[] '[i]
 
-  {-# MINIMAL validNetwork #-}
+  (:~>) :: (SingI i, SingI h, Layer x)
+        => !x
+        -> !(INetwork xs (h ': hs))
+        -> INetwork (x ': xs) (i ': h ': hs)
+infixr 5 :~>
+
+instance Show (INetwork '[] '[i]) where
+  show INNil = "NNil"
+
+instance (Show x, Show (INetwork xs rs)) => Show (INetwork (x ': xs) (i ': rs)) where
+  show (x :~> xs) = show x ++ "\n :~> " ++ show xs
+
+-- | Instanciates a Network after defining a type definition, using MkINetworkUnsafe for example.
+--   After defining a variable with INetwork type, you can instanciate that variable like this:
+--
+--   myNet :: MNIST
+--   myNet = mkINetwork
+class ValidNetwork (xs :: [Type]) (ss :: [Shape]) where
+  mkINetwork :: INetwork xs ss
+
+  {-# MINIMAL mkINetwork #-}
 
 instance (SingI i) => ValidNetwork '[] '[i] where
-  validNetwork = NNil
+  mkINetwork = INNil
 
 instance ( SingI i
          , SingI o
-         , Layer x i o
+         , Layer x
          , ValidNetwork xs (o ': rs)
+         , (Out x i) ~ o -- IMPORTANT: validation that the output and the computation of the layer
+                         -- will match. Without this constraint we could be able to create an
+                         -- instance of ValidNetwork that doesn't satisfies the type constraints
+                         -- of MkINetwork for example.
          ) => ValidNetwork (x ': xs) (i ': o ': rs) where
-  validNetwork = layer :~~ validNetwork
-
+    mkINetwork = layer :~> mkINetwork

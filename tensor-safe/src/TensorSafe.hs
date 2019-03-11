@@ -34,6 +34,8 @@ genericTensorExample =
         --   Actual type: Tensor Float [1, 4]
         (tensor6 :: Tensor Float [1, 4]) = tensor4 `matMult` tensor5 in
         do
+            putStrLn $ "Generic tensors example 1"
+            putStrLn $ "-------------------------"
             putStrLn $ "Building Shape[1,3] from unsafe list [1,3]: " ++ show shape1
             putStrLn $ "Building Shape[3,1] from unsafe list [3,3]: " ++ show shape2bad
             putStrLn $ "Building Shape[3,4] from unsafe list [3,4]: " ++ show shape2
@@ -60,17 +62,25 @@ genericTensorExample2 =
         node2                      = constant DT_FLOAT node2_shp
         node_add                   = node1 `add` node2 in
     do
+        putStrLn $ "Generic tensors example 2"
+        putStrLn $ "-------------------------"
         putStrLn $ show node_add
 
 --
 simpleExample :: IO ()
 simpleExample =
     do
+        putStrLn $ "Simple network example"
+        putStrLn $ "----------------------"
         putStrLn $ show myNet
 
 mnistExample :: IO ()
 mnistExample =
     do
+        putStrLn $ "MNIST example"
+        putStrLn $ "-------------"
         putStrLn $ show mnist
+        putStrLn $ "\n"
+        putStrLn $ "MNIST compilation"
+        putStrLn $ "-------------"
         putStrLn $ compileNetwork mnist
-
