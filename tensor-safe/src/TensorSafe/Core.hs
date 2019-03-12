@@ -5,6 +5,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module TensorSafe.Core where
 
+import           Data.Kind    (Type)
 import           GHC.TypeLits
 
 -- | Multiplies two natural numbers
@@ -23,6 +24,20 @@ type family ShapeProduct (s :: [Nat]) :: Nat where
     ShapeProduct '[] = 1
     ShapeProduct (m ': s) = NatMult m (ShapeProduct s)
 
+-- | Compares two types in kinds level
+type family TypeEquals (s1 :: Type) (s2 :: Type) :: Bool where
+    TypeEquals s s = 'True
+    TypeEquals _ _ = 'False
+
+-- | Compares two types in kinds level and raises error if they don't match
+type family TypeEquals' s1 s2 :: Type where
+    TypeEquals' s s = s
+    TypeEquals' s1 s2 =
+        TypeError ( 'Text "Couldn't match the type "
+              ':<>: 'ShowType s1
+              ':<>: 'Text " with type "
+              ':<>: 'ShowType s2)
+
 -- | Wrapper for a Nat value
 data R (n :: Nat) where
     R :: (KnownNat n) => R n
@@ -38,4 +53,5 @@ data L (m :: Nat) (n :: Nat) where
 instance (KnownNat m, KnownNat n) => Show (L m n) where
     -- show = show . typeOf
     show n = show (natVal n)
+
 

@@ -9,11 +9,11 @@ module TensorSafe (
 ) where
 
 import           Data.Maybe                        (Maybe, fromJust)
-import           TensorSafe.Compiler               (compileNetwork)
 import           TensorSafe.Examples.MnistExample  (mnist)
 import           TensorSafe.Examples.SimpleExample (myNet)
 import           TensorSafe.Generic.Shape
 import           TensorSafe.Generic.Tensor
+import           TensorSafe.Network                (compileNetwork)
 
 
 genericTensorExample :: IO ()

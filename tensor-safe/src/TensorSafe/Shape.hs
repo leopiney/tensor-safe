@@ -5,17 +5,14 @@
 {-# LANGUAGE KindSignatures       #-}
 {-# LANGUAGE StandaloneDeriving   #-}
 {-# LANGUAGE TypeFamilies         #-}
+{-# LANGUAGE TypeOperators        #-}
 {-# LANGUAGE UndecidableInstances #-}
 module TensorSafe.Shape where
 
 import           Data.Singletons
-import           TensorSafe.Core
-
-#if MIN_VERSION_base(4, 11, 0)
-import           GHC.TypeLits    hiding (natVal)
-#else
 import           GHC.TypeLits
-#endif
+
+import           TensorSafe.Core
 
 --
 -- Shape definition as in Haskell's Grenade library
@@ -75,3 +72,16 @@ instance (KnownNat a, KnownNat b) => SingI ('D2 a b) where
 
 instance (KnownNat a, KnownNat b, KnownNat c) => SingI ('D3 a b c) where
     sing = D3Sing sing sing sing
+
+-- | Compares two Shapes at kinds level and returns a Bool kind
+type family ShapeEquals (sIn :: Shape) (sOut :: Shape) :: Bool where
+    ShapeEquals s s = 'True
+    ShapeEquals _ _ = 'False
+
+type family ShapeEquals' (sIn :: Shape) (sOut :: Shape) :: Bool where
+    ShapeEquals' s s = 'True
+    ShapeEquals' s1 s2 =
+        TypeError ( 'Text "Couldn't match the Shape "
+              ':<>: 'ShowType s1
+              ':<>: 'Text " with the Shape "
+              ':<>: 'ShowType s2)

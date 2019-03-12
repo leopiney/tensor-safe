@@ -3,15 +3,13 @@
 module TensorSafe.Examples.MnistExample where
 
 
-import           TensorSafe.Layers.Conv2D
-import           TensorSafe.Layers.Dense
-import           TensorSafe.Layers.Flatten
-import           TensorSafe.Layers.MaxPooling
-import           TensorSafe.Layers.Relu
-import           TensorSafe.Layers.Sigmoid
-import           TensorSafe.Network           (mkINetwork)
+import           TensorSafe.Layers
+import           TensorSafe.Network (MkINetwork, mkINetwork)
 import           TensorSafe.Shape
-import           TensorSafe.Types.Network     (MkINetwork)
+
+type DenseSigmoid i o =
+    --INetwork '[ Dense i o, Sigmoid ] '[ 'D1 i, 'D1 i, 'D1 o ]
+    MkINetwork '[ Dense i o, Sigmoid ] ('D1 i) ('D1 o)
 
 type MNIST = MkINetwork
     '[
@@ -22,10 +20,12 @@ type MNIST = MkINetwork
         MaxPooling 2 2 2 2,
         Flatten,
         Relu,
-        Dense 256 80,
-        Sigmoid,
-        Dense 80 10,
-        Sigmoid
+        DenseSigmoid 256 80,
+        DenseSigmoid 80 10
+        -- Dense 256 80,
+        -- Sigmoid,
+        -- Dense 80 10,
+        -- Sigmoid
     ]
     ('D2 28 28)    -- Input
     ('D1 10)        -- Output
