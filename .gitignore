@@ -4,3 +4,8 @@
 *.idr~
 
 .history
+
+# Stack stuff
+.stack-work/
+tensor-safe.cabal
+*~

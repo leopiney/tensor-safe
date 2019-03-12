@@ -36,8 +36,7 @@ instance ( KnownNat channels
          ) => Layer (Conv2D channels filters kernelRows kernelColumns strideRows strideColumns) where
     layer = Conv2D
     compile _ =
-        let channels = show $ natVal (Proxy :: Proxy channels)
-            filters = show $ natVal (Proxy :: Proxy filters)
+        let filters = show $ natVal (Proxy :: Proxy filters)
             kernelRows = show $ natVal (Proxy :: Proxy kernelRows)
             kernelColumns = show $ natVal (Proxy :: Proxy kernelColumns)
             strideRows = show $ natVal (Proxy :: Proxy strideRows)
