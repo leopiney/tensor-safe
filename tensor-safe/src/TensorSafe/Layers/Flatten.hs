@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module TensorSafe.Layers.Flatten (Flatten) where
 
 import           TensorSafe.Layer

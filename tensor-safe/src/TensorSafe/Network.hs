@@ -3,6 +3,7 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE GADTs                 #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeOperators         #-}
@@ -12,7 +13,8 @@ module TensorSafe.Network where
 
 import           Data.Kind          (Type)
 import           Data.Singletons
-
+import           Data.Text.Lazy     (Text, unpack)
+import           Formatting
 import           GHC.TypeLits
 import           GHC.TypeLits.Extra (Div)
 
@@ -98,15 +100,14 @@ type family MkINetworkUnsafe (layers :: [Type]) (s :: Shape) :: Type where
   MkINetworkUnsafe ls s = INetwork ls (ComposeOut ls s)
 
 -- | TODO
-type family MaybeINetwork (net :: Type) (sOut :: Shape ) (b :: Bool) :: Type where
-  MaybeINetwork net sOut 'False =
-      Type -- HACK: ValidateOutput should raise an exception on this case
-  MaybeINetwork net sOut 'True  = net
+type family MaybeType (t :: Type) (b :: Bool) :: Type where
+  MaybeType t 'False = Type -- HACK: ValidateOutput should raise an exception on this case
+  MaybeType t 'True  = t
 
 -- | TODO
 type family MkINetwork (layers :: [Type]) (sIn :: Shape) (sOut :: Shape) :: Type where
   MkINetworkUnsafe ls sIn sOut =
-      MaybeINetwork (INetwork ls (ComposeOut ls sIn)) sOut (ValidateOutput ls sIn sOut)
+      MaybeType (INetwork ls (ComposeOut ls sIn)) (ValidateOutput ls sIn sOut)
 
 --
 --
@@ -149,6 +150,11 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
   --
   --
   Out (Dense i o) ('D1 i) = 'D1 o
+
+  --
+  --
+  --
+  Out (Dropout rate seed) s = s
 
   --
   --
@@ -223,19 +229,24 @@ instance ( SingI i
 --
 --Compilation preliminar stuff
 --
-compileNetwork :: INetwork xs ss -> String
+compileNetwork :: INetwork xs ss -> Text
 compileNetwork n =
-    "import * as tf from '@tensorflow/tfjs';\n\
+  let compilatedNetwork = unpack (compileNetwork' n)
+  in
+    format ("import * as tf from '@tensorflow/tfjs';\n\
     \\n\
     \\n\
     \ function createModel() {\n\
     \  const model = tf.sequential();\n\
     \\n\
-    \  " ++ compileNetwork' n ++ "\n\
+    \  " % string % "\n\
     \  return model\n\
-    \}\n"
+    \}\n") compilatedNetwork
 
 -- | Compiles a network recursivelly
-compileNetwork' :: INetwork xs ss -> String
+compileNetwork' :: INetwork xs ss -> Text
 compileNetwork' INNil     = ""
-compileNetwork' (l :~> n) = compile l ++ "\n  " ++ compileNetwork' n
+compileNetwork' (l :~> n) =
+  let compilatedLayer = unpack (compile l)
+      compilatedNetwork = unpack (compileNetwork' n)
+  in format ("" % string % "\n  " % string) compilatedLayer compilatedNetwork

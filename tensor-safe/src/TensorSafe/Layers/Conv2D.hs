@@ -1,10 +1,14 @@
-{-# LANGUAGE DataKinds    #-}
-{-# LANGUAGE GADTs        #-}
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE GADTs               #-}
+{-# LANGUAGE OverloadedStrings   #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeFamilies        #-}
 module TensorSafe.Layers.Conv2D where
 
 import           Data.Kind        (Type)
+import           Data.Proxy
 import           Data.Typeable    (typeOf)
+import           Formatting
 import           GHC.TypeLits
 
 import           TensorSafe.Layer
@@ -23,13 +27,19 @@ instance ( KnownNat c
         show = show . typeOf
 
 
-instance ( KnownNat c
-         , KnownNat f
-         , KnownNat k'
-         , KnownNat k'
-         , KnownNat s
-         , KnownNat s'
-         ) => Layer (Conv2D c f k k' s s') where
+instance ( KnownNat channels
+         , KnownNat filters
+         , KnownNat kernelRows
+         , KnownNat kernelColumns
+         , KnownNat strideRows
+         , KnownNat strideColumns
+         ) => Layer (Conv2D channels filters kernelRows kernelColumns strideRows strideColumns) where
     layer = Conv2D
     compile _ =
-        "model.add(tf.layers.conv2d({kernelSize: <<kernel>>, filters: <<filters>>}));"
+        let channels = show $ natVal (Proxy :: Proxy channels)
+            filters = show $ natVal (Proxy :: Proxy filters)
+            kernelRows = show $ natVal (Proxy :: Proxy kernelRows)
+            kernelColumns = show $ natVal (Proxy :: Proxy kernelColumns)
+            strideRows = show $ natVal (Proxy :: Proxy strideRows)
+            strideColumns = show $ natVal (Proxy :: Proxy strideColumns)
+        in format ("model.add(tf.layers.conv2d({kernelSize: [" % string % ", " % string % "], filters: " % string % ", strides: [" % string % ", " % string % "]}));") kernelRows kernelColumns filters strideRows strideColumns
