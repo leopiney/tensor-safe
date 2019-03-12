@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module TensorSafe.Layers.Sigmoid (Sigmoid) where
 
 import           TensorSafe.Layer

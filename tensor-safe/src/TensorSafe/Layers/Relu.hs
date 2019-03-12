@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module TensorSafe.Layers.Relu (Relu) where
 
 import           TensorSafe.Layer

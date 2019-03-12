@@ -1,10 +1,14 @@
-{-# LANGUAGE DataKinds    #-}
-{-# LANGUAGE GADTs        #-}
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE GADTs               #-}
+{-# LANGUAGE OverloadedStrings   #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeFamilies        #-}
 module TensorSafe.Layers.Dense where
 
 import           Data.Kind        (Type)
+import           Data.Proxy
 import           Data.Typeable    (typeOf)
+import           Formatting
 import           GHC.TypeLits
 
 import           TensorSafe.Layer
@@ -16,6 +20,10 @@ data Dense :: Nat -> Nat -> Type where
 instance (KnownNat i, KnownNat o) => Show (Dense i o) where
   show = show . typeOf
 
-instance Layer (Dense input output) where
+instance (KnownNat input, KnownNat output) => Layer (Dense input output) where
   layer = Dense
-  compile _ = "model.add(tf.layers.dense({units: <<dense>> })"
+  compile _ =
+    let input = show $ natVal (Proxy :: Proxy input)
+        output = show $ natVal (Proxy :: Proxy output)
+    in format ("model.add(tf.layers.dense({inputDim: " % string % ", units: " % string % " })") input output
+

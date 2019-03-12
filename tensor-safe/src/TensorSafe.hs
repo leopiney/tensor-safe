@@ -9,6 +9,7 @@ module TensorSafe (
 ) where
 
 import           Data.Maybe                        (Maybe, fromJust)
+import           Data.Text.Lazy                    (unpack)
 import           TensorSafe.Examples.MnistExample  (mnist)
 import           TensorSafe.Examples.SimpleExample (myNet)
 import           TensorSafe.Generic.Shape
@@ -83,4 +84,4 @@ mnistExample =
         putStrLn $ "\n"
         putStrLn $ "MNIST compilation"
         putStrLn $ "-------------"
-        putStrLn $ compileNetwork mnist
+        putStrLn $ unpack (compileNetwork mnist)
