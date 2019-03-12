@@ -12,18 +12,19 @@ type DenseSigmoid i o =
 
 type MNIST = MkINetwork
     '[
-        Conv2D 1 10 5 5 1 1,
-        MaxPooling 2 2 2 2,
+        Conv2D 1 16 3 3 1 1,
         Relu,
-        Dropout 50 1,
-        Conv2D 10 16 5 5 1 1,
         MaxPooling 2 2 2 2,
+        Conv2D 16 32 3 3 1 1,
+        Relu,
+        MaxPooling 2 2 2 2,
+        Conv2D 32 32 3 3 1 1,
+        Relu,
         Flatten,
-        Relu,
-        DenseSigmoid 256 80,
-        DenseSigmoid 80 10
+        DenseSigmoid 288 64,
+        DenseSigmoid 64 10
     ]
-    ('D2 28 28)    -- Input
+    ('D3 28 28 1)    -- Input
     ('D1 10)       -- Output
 
 mnist :: MNIST

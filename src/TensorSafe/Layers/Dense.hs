@@ -25,5 +25,5 @@ instance (KnownNat input, KnownNat output) => Layer (Dense input output) where
   compile _ =
     let input = show $ natVal (Proxy :: Proxy input)
         output = show $ natVal (Proxy :: Proxy output)
-    in format ("model.add(tf.layers.dense({inputDim: " % string % ", units: " % string % " })") input output
+    in format ("model.add(tf.layers.dense({inputDim: " % string % ", units: " % string % " }))") input output
 

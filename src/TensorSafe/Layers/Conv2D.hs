@@ -41,4 +41,4 @@ instance ( KnownNat channels
             kernelColumns = show $ natVal (Proxy :: Proxy kernelColumns)
             strideRows = show $ natVal (Proxy :: Proxy strideRows)
             strideColumns = show $ natVal (Proxy :: Proxy strideColumns)
-        in format ("model.add(tf.layers.conv2d({kernelSize: [" % string % ", " % string % "], filters: " % string % ", strides: [" % string % ", " % string % "]}));") kernelRows kernelColumns filters strideRows strideColumns
+        in format ("model.add(tf.layers.conv2d({ kernelSize: [" % string % ", " % string % "], filters: " % string % ", strides: [" % string % ", " % string % "]}));") kernelRows kernelColumns filters strideRows strideColumns
