@@ -5,12 +5,14 @@
 {-# LANGUAGE TypeFamilies        #-}
 module TensorSafe.Layers.MaxPooling where
 
-import           Data.Kind        (Type)
+import           Data.Kind               (Type)
+import           Data.Map
 import           Data.Proxy
-import           Data.Typeable    (typeOf)
+import           Data.Typeable           (typeOf)
 import           Formatting
 import           GHC.TypeLits
 
+import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
 -- | TODO
@@ -33,3 +35,15 @@ instance ( KnownNat kernelRows
             strideColumns = show $ natVal (Proxy :: Proxy strideColumns)
         in
         format ("model.add(tf.layers.maxPooling2d({poolSize: [" % string % ", " % string % "], strides: [" % string % ", " % string % "]}))") kernelRows kernelColumns strideRows strideColumns
+
+    compileCNet _ _ =
+        let kernelRows = natVal (Proxy :: Proxy kernelRows)
+            kernelColumns = natVal (Proxy :: Proxy kernelColumns)
+            strideRows = natVal (Proxy :: Proxy strideRows)
+            strideColumns = natVal (Proxy :: Proxy strideColumns)
+        in
+            CNLayer "maxPooling2d" (
+                fromList [
+                    ("poolSize", show [kernelRows, kernelColumns]),
+                    ("strides", show [strideRows, strideColumns])
+                ])

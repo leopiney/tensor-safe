@@ -5,12 +5,14 @@
 {-# LANGUAGE TypeFamilies        #-}
 module TensorSafe.Layers.Conv2D where
 
-import           Data.Kind        (Type)
+import           Data.Kind               (Type)
+import           Data.Map
 import           Data.Proxy
-import           Data.Typeable    (typeOf)
+import           Data.Typeable           (typeOf)
 import           Formatting
 import           GHC.TypeLits
 
+import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
 
@@ -46,3 +48,20 @@ instance ( KnownNat channels
             ", kernelSize: [" % string % ", " % string % "], filters: " % string %
             ", strides: [" % string % ", " % string % "]}));"
            ) inputShape kernelRows kernelColumns filters strideRows strideColumns
+    compileCNet _ inputShape =
+        let filters = natVal (Proxy :: Proxy filters)
+            kernelRows = natVal (Proxy :: Proxy kernelRows)
+            kernelColumns = natVal (Proxy :: Proxy kernelColumns)
+            strideRows = natVal (Proxy :: Proxy strideRows)
+            strideColumns = natVal (Proxy :: Proxy strideColumns)
+
+            initialParams = case inputShape of
+                Just shape -> fromList [("inputShape", shape)]
+                Nothing    -> empty
+            params = union initialParams (fromList [
+                    ("kernelSize", show [kernelRows, kernelColumns]),
+                    ("filters", show filters),
+                    ("strides", show [strideRows, strideColumns])
+                ])
+        in
+            CNLayer "conv2d" params
