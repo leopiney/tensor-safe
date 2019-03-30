@@ -2,7 +2,6 @@
 {-# LANGUAGE GADTs     #-}
 module TensorSafe.Examples.MnistExample where
 
-
 import           TensorSafe.Layers
 import           TensorSafe.Network (MkINetwork, mkINetwork)
 import           TensorSafe.Shape

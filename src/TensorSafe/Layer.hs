@@ -5,11 +5,16 @@ import           Data.Text.Lazy          (Text)
 
 import           TensorSafe.Compile.Expr
 
+type InputShape = Maybe String
+
 -- | Defines that a type is a Layer
---   Each layer can be compilated into a specific line for now. This is incompatible with
---   dependencies between lines of code while compiling the networks to a specific frontend.
+--   Each layer can be compilated into a specific CNetwork expression which can later be used
+--   to generate code to a specific backend.
 class Layer x where
+    -- | The layer type
     layer :: x
-    compile :: x -> Maybe String -> CNetwork
+
+    -- | Given the layer and a optional `inputShape` generates a CNetwork structure
+    compile :: x -> InputShape -> CNetwork
 
     {-# MINIMAL compile, layer #-}

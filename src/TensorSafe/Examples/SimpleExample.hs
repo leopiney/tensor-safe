@@ -17,13 +17,13 @@ myNet2 :: MyNet2
 myNet2 = mkINetwork
 
 myNet3 :: MkINetwork
-       '[
-          MaxPooling 2 2 2 2,
-          Flatten,
-          Dense 196 10,
-          Sigmoid,
-          Relu
-        ]
-        ('D2 28 28)
-        ('D1 10)
+    '[
+        MaxPooling 2 2 2 2,
+        Flatten,
+        Dense 196 10,
+        Sigmoid,
+        Relu
+    ]
+    ('D2 28 28)
+    ('D1 10)
 myNet3 = mkINetwork

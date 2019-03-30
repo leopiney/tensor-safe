@@ -12,6 +12,7 @@ import           GHC.TypeLits
 import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
+-- | TODO
 data Dropout :: Nat -> Nat -> Type where
     Dropout :: Dropout rate seed
     deriving Show
