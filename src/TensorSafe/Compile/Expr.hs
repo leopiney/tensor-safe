@@ -29,11 +29,11 @@ evalJS (CNCons cn1 cn2) = (evalJS cn1) ++ (evalJS cn2)
 evalJS (CNNil) = []
 evalJS CNReturn = ["return model"]
 evalJS (CNLayer layer params) =
-    [format ("model.add(tf.layers." % string % "(" % string % ")") layer (paramsToString params)]
+    [format ("model.add(tf.layers." % string % "(" % string % ")") layer (paramsToJS params)]
 
 
-paramsToString :: Map String String -> String
-paramsToString m =
+paramsToJS :: Map String String -> String
+paramsToJS m =
     (foldrWithKey showParam "{ " m) ++ "}"
     where
         showParam :: String -> String -> String -> String
