@@ -61,7 +61,7 @@ instance (Show x, Show (INetwork xs rs)) => Show (INetwork (x ': xs) (i ': rs)) 
 instance ValidNetwork ls ss => Layer (INetwork ls ss) where
     layer = mkINetwork
     compile n = compileNetwork' n
-    compileCNet n i = toCNetwork' n i
+    compileCNet n i = toCNetwork' n True i
 
 --
 --
@@ -278,18 +278,21 @@ toCNetwork ::
                       , ValidNetwork (x ': xs) (i ': ss)) => INetwork (x ': xs) (i ': ss) -> CNetwork
 toCNetwork n =
     case (sing :: Sing i) of
-        D1Sing a     -> CNSequence (toCNetwork' n (Just $ show [ natVal a]))
+        D1Sing a     -> CNSequence (toCNetwork' n False (Just $ show [ natVal a]))
 
-        D2Sing a b   -> CNSequence (toCNetwork' n (Just $ show [ natVal a
-                                                               , natVal b]))
+        D2Sing a b   -> CNSequence (toCNetwork' n False (Just $ show [ natVal a
+                                                                     , natVal b]))
 
-        D3Sing a b c -> CNSequence (toCNetwork' n (Just $ show [ natVal a
-                                                               , natVal b
-                                                               , natVal c]))
+        D3Sing a b c -> CNSequence (toCNetwork' n False (Just $ show [ natVal a
+                                                                     , natVal b
+                                                                     , natVal c]))
 
-toCNetwork' :: INetwork xs ss -> Maybe String -> CNetwork
-toCNetwork' INNil _    = CNReturn
-toCNetwork' (l :~> n) inputShape =
+toCNetwork' :: INetwork xs ss -> Bool -> Maybe String -> CNetwork
+toCNetwork' INNil nested _ =
+    if nested
+        then CNNil
+        else CNReturn
+toCNetwork' (l :~> n) nested inputShape =
     let compilatedLayer = compileCNet l inputShape
-        compilatedNetwork = toCNetwork' n Nothing
+        compilatedNetwork = toCNetwork' n nested Nothing
     in CNCons compilatedLayer compilatedNetwork
