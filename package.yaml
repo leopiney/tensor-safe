@@ -36,6 +36,17 @@ executables:
     dependencies:
       - tensor-safe
 
+  tensor-safe-examples:
+    main: Examples.hs
+    source-dirs: app
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+      - -main-is Examples
+    dependencies:
+      - tensor-safe
+
 tests:
   tensor-safe-test:
     main: Spec.hs
