@@ -3,7 +3,6 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE GADTs                 #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeOperators         #-}
@@ -13,14 +12,11 @@ module TensorSafe.Network where
 
 import           Data.Kind               (Type)
 import           Data.Singletons
-import           Data.Text.Lazy          (Text, unpack)
-import           Formatting
-import           GHC.TypeLits
+import           GHC.TypeLits            as N
 import           GHC.TypeLits.Extra      (Div)
 
 import           TensorSafe.Compile.Expr
-import           TensorSafe.Core
-import           TensorSafe.Layer        (Layer, compile, compileCNet, layer)
+import           TensorSafe.Layer        (Layer, compile, layer)
 import           TensorSafe.Layers
 import           TensorSafe.Shape
 
@@ -60,8 +56,7 @@ instance (Show x, Show (INetwork xs rs)) => Show (INetwork (x ': xs) (i ': rs)) 
 
 instance ValidNetwork ls ss => Layer (INetwork ls ss) where
     layer = mkINetwork
-    compile n = compileNetwork' n
-    compileCNet n i = toCNetwork' n True i
+    compile n i = toCNetwork' n True i
 
 --
 --
@@ -162,8 +157,8 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
     --
     --
     Out Flatten ('D1 x)     = 'D1 x
-    Out Flatten ('D2 x y)   = 'D1 (NatMult x y)
-    Out Flatten ('D3 x y z) = 'D1 (NatMult3 x y z)
+    Out Flatten ('D2 x y)   = 'D1 (x N.* y)
+    Out Flatten ('D3 x y z) = 'D1 (x N.* y N.* z)
 
     --
     --
@@ -227,51 +222,9 @@ instance ( SingI i
       ) => ValidNetwork (x ': xs) (i ': o ': rs) where
     mkINetwork = layer :~> mkINetwork
 
-
 --
---Compilation preliminar stuff
+-- Compilation
 --
-compileNetwork ::
-    forall i x xs ss. ( SingI i
-                      , Layer x
-                      , ValidNetwork (x ': xs) (i ': ss)) => INetwork (x ': xs) (i ': ss) -> Text
-compileNetwork n =
-    case (sing :: Sing i) of
-        D1Sing a ->     compileNetworkInput n [ fromInteger (natVal a)]
-        D2Sing a b ->   compileNetworkInput n [ fromInteger (natVal a)
-                                              , fromInteger (natVal b)]
-        D3Sing a b c -> compileNetworkInput n [ fromInteger (natVal a)
-                                              , fromInteger (natVal b)
-                                              , fromInteger (natVal c)]
-
--- | Compiles a network recursivelly
-compileNetwork' :: INetwork xs ss -> String -> Text
-compileNetwork' INNil _    = ""
-compileNetwork' (l :~> n) inputShape =
-    let compilatedLayer = unpack (compile l inputShape)
-        compilatedNetwork = unpack (compileNetwork' n "undefined")
-    in format ("" % string % "\n  " % string) compilatedLayer compilatedNetwork
-
-
-compileNetworkInput :: INetwork xs ss -> [Integer] -> Text
-compileNetworkInput n inputShape =
-    let compilatedNetwork = unpack (compileNetwork' n (show inputShape))
-    in
-        format ("import * as tf from '@tensorflow/tfjs';\n\
-            \\n\
-            \\n\
-            \ function createModel() {\n\
-            \  const model = tf.sequential();\n\
-            \\n\
-            \  " % string % "\n\
-            \  return model\n\
-            \}\n") compilatedNetwork
-
-
---
--- Compilation: More advanced stuff
---
-
 toCNetwork ::
     forall i x xs ss. ( SingI i
                       , Layer x
@@ -293,6 +246,6 @@ toCNetwork' INNil nested _ =
         then CNNil
         else CNReturn
 toCNetwork' (l :~> n) nested inputShape =
-    let compilatedLayer = compileCNet l inputShape
+    let compilatedLayer = compile l inputShape
         compilatedNetwork = toCNetwork' n nested Nothing
     in CNCons compilatedLayer compilatedNetwork

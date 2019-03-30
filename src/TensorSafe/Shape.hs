@@ -10,7 +10,7 @@
 module TensorSafe.Shape where
 
 import           Data.Singletons
-import           GHC.TypeLits
+import           GHC.TypeLits    as N
 
 import           TensorSafe.Core
 
@@ -47,8 +47,8 @@ data S (n :: Shape) where
     S3D :: ( KnownNat rows
             , KnownNat columns
             , KnownNat depth
-            , KnownNat (NatMult rows depth))
-        => L (NatMult rows depth) columns
+            , KnownNat (rows N.* depth))
+        => L (rows N.* depth) columns
         -> S ('D3 rows columns depth)
 
 deriving instance Show (S n)

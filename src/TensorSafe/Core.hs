@@ -6,23 +6,12 @@
 module TensorSafe.Core where
 
 import           Data.Kind    (Type)
-import           GHC.TypeLits
-
--- | Multiplies two natural numbers
-type family NatMult (a :: Nat) (b :: Nat) :: Nat where
-    NatMult a 0 = 0
-    NatMult a b = a + NatMult a (b - 1)
-
--- | Multiplies three natural numbers
-type family NatMult3 (a :: Nat) (b :: Nat) (c :: Nat) :: Nat where
-    NatMult3 a b 0 = 0
-    NatMult3 a 0 c = 0
-    NatMult3 a b c = NatMult c (NatMult a b)
+import           GHC.TypeLits as N
 
 -- | Multiplies all numbers on a list of natural numbers
 type family ShapeProduct (s :: [Nat]) :: Nat where
     ShapeProduct '[] = 1
-    ShapeProduct (m ': s) = NatMult m (ShapeProduct s)
+    ShapeProduct (m ': s) = m N.* (ShapeProduct s)
 
 -- | Compares two types in kinds level
 type family TypeEquals (s1 :: Type) (s2 :: Type) :: Bool where

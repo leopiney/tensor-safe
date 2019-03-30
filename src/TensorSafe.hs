@@ -11,11 +11,13 @@ module TensorSafe (
 
 import           Data.Maybe                        (Maybe, fromJust)
 import           Data.Text.Lazy                    (unpack)
+
+import           TensorSafe.Compile.Expr           (Backend (..), eval)
 import           TensorSafe.Examples.MnistExample  (mnist, mnistDense)
 import           TensorSafe.Examples.SimpleExample (myNet)
 import           TensorSafe.Generic.Shape
 import           TensorSafe.Generic.Tensor
-import           TensorSafe.Network                (compileNetwork)
+import           TensorSafe.Network                (toCNetwork)
 
 
 genericTensorExample :: IO ()
@@ -85,7 +87,11 @@ mnistExample =
         putStrLn $ "\n"
         putStrLn $ "MNIST compilation"
         putStrLn $ "-------------"
-        putStrLn $ unpack (compileNetwork mnist)
+        putStrLn $ show (toCNetwork mnist)
+        putStrLn $ "\n"
+        putStrLn $ "MNIST generation"
+        putStrLn $ "-------------"
+        putStrLn $ unpack $ eval JavaScript (toCNetwork mnist)
 
 mnistExampleDense :: IO ()
 mnistExampleDense =
@@ -96,4 +102,8 @@ mnistExampleDense =
         putStrLn $ "\n"
         putStrLn $ "MNIST compilation"
         putStrLn $ "-------------"
-        putStrLn $ unpack (compileNetwork mnistDense)
+        putStrLn $ show (toCNetwork mnistDense)
+        putStrLn $ "\n"
+        putStrLn $ "MNIST generation"
+        putStrLn $ "-------------"
+        putStrLn $ unpack $ eval JavaScript (toCNetwork mnistDense)

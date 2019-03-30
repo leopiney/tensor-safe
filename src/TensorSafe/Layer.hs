@@ -10,7 +10,6 @@ import           TensorSafe.Compile.Expr
 --   dependencies between lines of code while compiling the networks to a specific frontend.
 class Layer x where
     layer :: x
-    compile :: x -> String -> Text
-    compileCNet :: x -> Maybe String -> CNetwork
+    compile :: x -> Maybe String -> CNetwork
 
-    {-# MINIMAL compile, compileCNet, layer #-}
+    {-# MINIMAL compile, layer #-}
