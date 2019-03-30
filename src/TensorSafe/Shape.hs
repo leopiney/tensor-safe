@@ -60,9 +60,9 @@ deriving instance Show (S n)
 -- clear and makes adding the KnownNat constraints simple.
 -- We can also keep our code TH free, which is great.
 data instance Sing (n :: Shape) where
-    D1Sing :: Sing a -> Sing ('D1 a)
-    D2Sing :: Sing a -> Sing b -> Sing ('D2 a b)
-    D3Sing :: Sing a -> Sing b -> Sing c -> Sing ('D3 a b c)
+    D1Sing :: KnownNat a => Sing a -> Sing ('D1 a)
+    D2Sing :: (KnownNat a, KnownNat b) => Sing a -> Sing b -> Sing ('D2 a b)
+    D3Sing :: (KnownNat a, KnownNat b, KnownNat c) => Sing a -> Sing b -> Sing c -> Sing ('D3 a b c)
 
 instance KnownNat a => SingI ('D1 a) where
     sing = D1Sing sing

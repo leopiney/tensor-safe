@@ -7,6 +7,6 @@ import           Data.Text.Lazy (Text)
 --   dependencies between lines of code while compiling the networks to a specific frontend.
 class Layer x where
     layer :: x
-    compile :: x -> Text
+    compile :: x -> String -> Text
 
     {-# MINIMAL compile, layer #-}

@@ -7,6 +7,9 @@ import           TensorSafe.Layers
 import           TensorSafe.Network (MkINetwork, mkINetwork)
 import           TensorSafe.Shape
 
+type DenseRelu i o =
+    MkINetwork '[ Dense i o, Relu ] ('D1 i) ('D1 o)
+
 type DenseSigmoid i o =
     MkINetwork '[ Dense i o, Sigmoid ] ('D1 i) ('D1 o)
 
@@ -29,3 +32,16 @@ type MNIST = MkINetwork
 
 mnist :: MNIST
 mnist = mkINetwork
+
+
+type MNISTDense = MkINetwork
+    '[
+        Flatten,
+        DenseRelu 784 42,
+        DenseSigmoid 42 10
+    ]
+    ('D3 28 28 1)    -- Input
+    ('D1 10)       -- Output
+
+mnistDense :: MNISTDense
+mnistDense = mkINetwork

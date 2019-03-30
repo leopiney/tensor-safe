@@ -18,7 +18,7 @@ data Dropout :: Nat -> Nat -> Type where
 
 instance (KnownNat rate, KnownNat seed) => Layer (Dropout rate seed) where
     layer = Dropout
-    compile _ =
+    compile _ _ =
         let rate = show $ natVal (Proxy :: Proxy rate)
             seed = show $ natVal (Proxy :: Proxy seed)
-        in format ("model.add(tf.layers.dropout({rate: " % string % ", seed: " % string % "}))")  rate seed
+        in format ("model.add(tf.layers.dropout({rate: " % string % ", seed: " % string % "}))") rate seed

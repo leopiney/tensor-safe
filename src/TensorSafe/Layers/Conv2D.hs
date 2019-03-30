@@ -35,10 +35,14 @@ instance ( KnownNat channels
          , KnownNat strideColumns
          ) => Layer (Conv2D channels filters kernelRows kernelColumns strideRows strideColumns) where
     layer = Conv2D
-    compile _ =
+    compile _ inputShape =
         let filters = show $ natVal (Proxy :: Proxy filters)
             kernelRows = show $ natVal (Proxy :: Proxy kernelRows)
             kernelColumns = show $ natVal (Proxy :: Proxy kernelColumns)
             strideRows = show $ natVal (Proxy :: Proxy strideRows)
             strideColumns = show $ natVal (Proxy :: Proxy strideColumns)
-        in format ("model.add(tf.layers.conv2d({ kernelSize: [" % string % ", " % string % "], filters: " % string % ", strides: [" % string % ", " % string % "]}));") kernelRows kernelColumns filters strideRows strideColumns
+        in format (
+            "model.add(tf.layers.conv2d({ inputShape: " % string %
+            ", kernelSize: [" % string % ", " % string % "], filters: " % string %
+            ", strides: [" % string % ", " % string % "]}));"
+           ) inputShape kernelRows kernelColumns filters strideRows strideColumns

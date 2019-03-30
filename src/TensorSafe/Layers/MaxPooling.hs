@@ -26,7 +26,7 @@ instance ( KnownNat kernelRows
          , KnownNat strideColumns
          ) => Layer (MaxPooling kernelRows kernelColumns strideRows strideColumns) where
     layer = MaxPooling
-    compile _ =
+    compile _ _ =
         let kernelRows = show $ natVal (Proxy :: Proxy kernelRows)
             kernelColumns = show $ natVal (Proxy :: Proxy kernelColumns)
             strideRows = show $ natVal (Proxy :: Proxy strideRows)

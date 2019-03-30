@@ -9,7 +9,7 @@ copyright: "2019 Leonardo Pineyro"
 extra-source-files:
   - README.md
 
-ghc-options: -Wall
+ghc-options: -Wall -freduction-depth=0
 
 dependencies:
   - base >= 4.7 && < 5

@@ -215,13 +215,13 @@ instance (SingI i) => ValidNetwork '[] '[i] where
   mkINetwork = INNil
 
 instance ( SingI i
-      , SingI o
-      , Layer x
-      , ValidNetwork xs (o ': rs)
-      , (Out x i) ~ o -- IMPORTANT: validation that the output and the computation of the layer
-                      -- will match. Without this constraint we could be able to create an
-                      -- instance of ValidNetwork that doesn't satisfies the type constraints
-                      -- of MkINetwork for example.
+         , SingI o
+         , Layer x
+         , ValidNetwork xs (o ': rs)
+         , (Out x i) ~ o -- IMPORTANT: validation that the output and the computation of the layer
+                         -- will match. Without this constraint we could be able to create an
+                         -- instance of ValidNetwork that doesn't satisfies the type constraints
+                         -- of MkINetwork for example.
       ) => ValidNetwork (x ': xs) (i ': o ': rs) where
   mkINetwork = layer :~> mkINetwork
 
@@ -229,24 +229,38 @@ instance ( SingI i
 --
 --Compilation preliminar stuff
 --
-compileNetwork :: INetwork xs ss -> Text
+compileNetwork ::
+  forall i x xs ss. ( SingI i
+                    , Layer x
+                    , ValidNetwork (x ': xs) (i ': ss)) => INetwork (x ': xs) (i ': ss) -> Text
 compileNetwork n =
-  let compilatedNetwork = unpack (compileNetwork' n)
-  in
-    format ("import * as tf from '@tensorflow/tfjs';\n\
-    \\n\
-    \\n\
-    \ function createModel() {\n\
-    \  const model = tf.sequential();\n\
-    \\n\
-    \  " % string % "\n\
-    \  return model\n\
-    \}\n") compilatedNetwork
+    case (sing :: Sing i) of
+      D1Sing a ->     compileNetworkInput n [ fromInteger (natVal a)]
+      D2Sing a b ->   compileNetworkInput n [ fromInteger (natVal a)
+                                            , fromInteger (natVal b)]
+      D3Sing a b c -> compileNetworkInput n [ fromInteger (natVal a)
+                                            , fromInteger (natVal b)
+                                            , fromInteger (natVal c)]
 
 -- | Compiles a network recursivelly
-compileNetwork' :: INetwork xs ss -> Text
-compileNetwork' INNil     = ""
-compileNetwork' (l :~> n) =
-  let compilatedLayer = unpack (compile l)
-      compilatedNetwork = unpack (compileNetwork' n)
+compileNetwork' :: INetwork xs ss -> String -> Text
+compileNetwork' INNil _    = ""
+compileNetwork' (l :~> n) inputShape =
+  let compilatedLayer = unpack (compile l inputShape)
+      compilatedNetwork = unpack (compileNetwork' n "undefined")
   in format ("" % string % "\n  " % string) compilatedLayer compilatedNetwork
+
+
+compileNetworkInput :: INetwork xs ss -> [Integer] -> Text
+compileNetworkInput n inputShape =
+  let compilatedNetwork = unpack (compileNetwork' n (show inputShape))
+  in
+    format ("import * as tf from '@tensorflow/tfjs';\n\
+        \\n\
+        \\n\
+        \ function createModel() {\n\
+        \  const model = tf.sequential();\n\
+        \\n\
+        \  " % string % "\n\
+        \  return model\n\
+        \}\n") compilatedNetwork

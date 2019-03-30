@@ -8,4 +8,4 @@ data Relu = Relu deriving Show
 
 instance Layer Relu where
     layer = Relu
-    compile _ = "model.add(tf.layers.reLU())"
+    compile _ _ = "model.add(tf.layers.reLU())"

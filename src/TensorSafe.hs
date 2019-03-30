@@ -5,12 +5,13 @@ module TensorSafe (
     genericTensorExample,
     genericTensorExample2,
     simpleExample,
-    mnistExample
+    mnistExample,
+    mnistExampleDense
 ) where
 
 import           Data.Maybe                        (Maybe, fromJust)
 import           Data.Text.Lazy                    (unpack)
-import           TensorSafe.Examples.MnistExample  (mnist)
+import           TensorSafe.Examples.MnistExample  (mnist, mnistDense)
 import           TensorSafe.Examples.SimpleExample (myNet)
 import           TensorSafe.Generic.Shape
 import           TensorSafe.Generic.Tensor
@@ -85,3 +86,14 @@ mnistExample =
         putStrLn $ "MNIST compilation"
         putStrLn $ "-------------"
         putStrLn $ unpack (compileNetwork mnist)
+
+mnistExampleDense :: IO ()
+mnistExampleDense =
+    do
+        putStrLn $ "MNIST Dense example"
+        putStrLn $ "-------------"
+        putStrLn $ show mnistDense
+        putStrLn $ "\n"
+        putStrLn $ "MNIST compilation"
+        putStrLn $ "-------------"
+        putStrLn $ unpack (compileNetwork mnistDense)

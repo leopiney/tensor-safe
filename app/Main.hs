@@ -11,3 +11,5 @@ main = do
     simpleExample
     putStrLn $ "\n\n"
     mnistExample
+    putStrLn $ "\n\n"
+    mnistExampleDense
