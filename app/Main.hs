@@ -20,7 +20,7 @@ cCheck = Check
 cCompile :: TensorSafe
 cCompile = Compile
     { path = def &= typ "PATH" &= help "Path to Haskell module with TensorSafe model inside"
-    , module_name = def &= typ "NAME" &= help "The module name inside the TensorSafe model file (default SomeModule)" &= opt "SomeModule"
+    , module_name = def &= help "The module name inside the TensorSafe model file"
     } &= help "Compiles module and outputs Neural Network model for the specified backend"
 
 cExamples :: TensorSafe
