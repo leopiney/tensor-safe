@@ -17,6 +17,7 @@ dependencies:
   - extra >= 1.6 && < 1.7
   - formatting >= 6.3.6 && < 6.4
   - ghc-typelits-extra >= 0.3 && < 0.4
+  - hint >= 0.9.0 && < 1.0
   - singletons >= 2.5.1 && < 2.6
   - text >= 1.2.3.1 && < 1.3
   - vector >= 0.12 && < 0.13
@@ -26,24 +27,13 @@ library:
   source-dirs: src
 
 executables:
-  tensor-safe-exe:
+  tensor-safe:
     main: Main.hs
     source-dirs: app
     ghc-options:
       - -threaded
       - -rtsopts
       - -with-rtsopts=-N
-    dependencies:
-      - tensor-safe
-
-  tensor-safe-examples:
-    main: Examples.hs
-    source-dirs: app
-    ghc-options:
-      - -threaded
-      - -rtsopts
-      - -with-rtsopts=-N
-      - -main-is Examples
     dependencies:
       - tensor-safe
 

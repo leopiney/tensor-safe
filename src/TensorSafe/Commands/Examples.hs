@@ -1,9 +1,9 @@
-module Examples where
+module TensorSafe.Commands.Examples where
 
 import           TensorSafe.Examples.Examples
 
-main :: IO ()
-main = do
+examples :: IO ()
+examples = do
     genericTensorExample
     putStrLn $ "\n\n"
     genericTensorExample2
@@ -13,3 +13,4 @@ main = do
     mnistExample
     putStrLn $ "\n\n"
     mnistExampleDense
+

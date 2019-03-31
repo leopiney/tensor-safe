@@ -2,13 +2,13 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module TensorSafe (
     Backend (..),
-    eval,
+    evalCNetwork,
     INetwork,
     MkINetwork,
     mkINetwork,
     toCNetwork
 ) where
 
-import           TensorSafe.Compile.Expr (Backend (..), eval)
+import           TensorSafe.Compile.Expr (Backend (..), evalCNetwork)
 import           TensorSafe.Network      (INetwork, MkINetwork, mkINetwork,
                                           toCNetwork)

@@ -15,9 +15,9 @@ data CNetwork = CNSequence CNetwork
 
 data Backend = JavaScript | Python deriving Show
 
-eval :: Backend -> CNetwork -> Text
-eval Python cn     = T.intercalate "\n" (evalPython cn)
-eval JavaScript cn = T.intercalate "\n" (evalJS cn)
+evalCNetwork :: Backend -> CNetwork -> Text
+evalCNetwork Python cn     = T.intercalate "\n" (evalPython cn)
+evalCNetwork JavaScript cn = T.intercalate "\n" (evalJS cn)
 
 
 evalPython :: CNetwork -> [Text]

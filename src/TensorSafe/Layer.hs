@@ -1,7 +1,6 @@
 module TensorSafe.Layer where
 
 import           Data.Maybe              ()
-import           Data.Text.Lazy          (Text)
 
 import           TensorSafe.Compile.Expr
 

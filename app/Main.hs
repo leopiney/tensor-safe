@@ -1,48 +1,18 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE GADTs     #-}
 module Main where
 
-import           Data.Text.Lazy
-import           TensorSafe
-import           TensorSafe.Layers
-import           TensorSafe.Shape
+import           System.Environment
 
-
--- | Initial block of code to fill here
---   don't remove this comment
---
-
--- { BEGIN }
-type NN = MkINetwork
-    -- { BEGIN NETWORK }
-    '[
-        Conv2D 1 16 3 3 1 1,
-        Relu,
-        MaxPooling 2 2 2 2,
-        Conv2D 16 32 3 3 1 1,
-        Relu,
-        MaxPooling 2 2 2 2,
-        Conv2D 32 32 3 3 1 1,
-        Relu,
-        Flatten,
-        Dense 288 64,
-        Sigmoid,
-        Dense 64 10,
-        Sigmoid
-    ]
-    ('D3 28 28 1)
-    ('D1 10)
-    -- { END NETWORK }
-
-nn :: NN
-nn = mkINetwork
--- { END }
-
--- | End of block
---   don't remove this comment
---
+import           TensorSafe.Commands.Check    (check)
+import           TensorSafe.Commands.Compile  (compile)
+import           TensorSafe.Commands.Examples (examples)
 
 main :: IO ()
 main = do
-    putStrLn "Generating network"
-    putStrLn $ unpack $ eval JavaScript (toCNetwork nn)
+    args <- getArgs
+    let command = head args
+    let commandArgs = tail args
+    case command of
+        "check"    -> check (commandArgs !! 0)
+        "compile"  -> compile (commandArgs !! 0) (commandArgs !! 1)
+        "examples" -> examples
+        d          -> putStrLn $ "Unknown command " ++ d
