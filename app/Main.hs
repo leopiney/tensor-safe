@@ -31,7 +31,7 @@ tensorSafe = cmdArgs (modes [cCompile, cCheck, cExamples])
 
 main :: IO ()
 main = do
-    print =<< tensorSafe
+    -- print =<< tensorSafe
     r <- tensorSafe
     case r of
         Check { path = p }                    -> check p

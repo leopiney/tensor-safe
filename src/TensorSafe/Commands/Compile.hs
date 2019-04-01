@@ -14,7 +14,6 @@ compile path moduleName = do
             putStrLn $ errorString err
             exitWith $ ExitFailure 1
         Right () -> do
-            putStrLn $ "Ok"
             exitWith $ ExitSuccess
 
 checkAndCompile :: String -> String -> Interpreter ()
@@ -23,10 +22,5 @@ checkAndCompile path moduleName = do
     setTopLevelModules [moduleName]
     setImportsQ [("TensorSafe", Nothing), ("Data.Text.Lazy", Nothing)]
 
-    let expr = "nn"
-    say $ "e.g. typeOf " ++ expr
-    say =<< typeOf expr
-
-    say $ "Generating nn code"
-    r <- eval "unpack $ evalCNetwork JavaScript (toCNetwork nn)"
-    say r
+    r <- interpret "unpack $ evalCNetwork JavaScript (toCNetwork nn)" (as :: String)
+    liftIO $ putStrLn r

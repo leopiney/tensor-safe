@@ -27,9 +27,9 @@ evalJS :: CNetwork -> [Text]
 evalJS (CNSequence cn)  = ["const model = tf.sequential();"] ++ evalJS cn
 evalJS (CNCons cn1 cn2) = (evalJS cn1) ++ (evalJS cn2)
 evalJS (CNNil) = []
-evalJS CNReturn = ["return model"]
+evalJS CNReturn = [] -- ["return model"]
 evalJS (CNLayer layer params) =
-    [format ("model.add(tf.layers." % string % "(" % string % ")") layer (paramsToJS params)]
+    [format ("model.add(tf.layers." % string % "(" % string % "))") layer (paramsToJS params)]
 
 
 paramsToJS :: Map String String -> String

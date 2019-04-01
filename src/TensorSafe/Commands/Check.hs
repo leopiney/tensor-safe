@@ -14,5 +14,4 @@ check path = do
             putStrLn $ errorString err
             exitWith $ ExitFailure 1
         Right () -> do
-            putStrLn $ "Ok"
             exitWith $ ExitSuccess
