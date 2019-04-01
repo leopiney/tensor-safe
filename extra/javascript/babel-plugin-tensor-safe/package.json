@@ -1,0 +1,14 @@
+{
+  "name": "@babel/plugin-tensor-safe",
+  "private": true,
+  "dependencies": {
+    "@babel/core": "^7.1.2"
+  },
+  "main": "index.js",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": "Leonardo Piñeyro",
+  "keywords": [
+    "babel-plugin"
+  ]
+}
