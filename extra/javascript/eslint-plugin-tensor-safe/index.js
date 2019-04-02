@@ -6,7 +6,7 @@ var fs = require("fs");
 */
 module.exports = {
   rules: {
-    "tensor-safe-model-invalid": {
+    "invalid-model": {
       create: function(context) {
         return {
           TaggedTemplateExpression(node) {

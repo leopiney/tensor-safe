@@ -3,8 +3,8 @@
 module TensorSafe.Examples.SimpleExample where
 
 
+import           TensorSafe        (MkINetwork, mkINetwork)
 import           TensorSafe.Layers
-import           TensorSafe.Network (MkINetwork, mkINetwork)
 import           TensorSafe.Shape
 
 

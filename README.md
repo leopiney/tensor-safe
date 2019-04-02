@@ -1,98 +1,144 @@
-# tensor-safe
+# Tensor Safe
+
+`tensor-safe` is a framework to define deep learning models which structure is verified on
+compilation time. If the models are valid, these can be compiled to Keras framework in Python
+or JavaScript.
 
 ## Instalation instructions
 
 1. Install `ghc-mod`, `hpack` and `stylish-haskell` with `stack install`
+
+   ```
+   cd ~
+   stack install ghc-mod hpack stylish-haskell
+   ```
+
 2. Run `stack build` in project folder
-3. Install `Intero` https://gitlab.com/vannnns/haskero/blob/master/client/doc/installation.md
+3. Install `Intero`
 
-## Desirable example
+   Run `stack build intero` in the project folder
 
-```
-Network
+   Ref: https://gitlab.com/vannnns/haskero/blob/master/client/doc/installation.md
 
-[ Conv2D 1 10 5 5 1 1, Pooling 2 2 2 2, Relu
-, Conv2D 10 16 5 5 1 1, Pooling 2 2 2 2, Reshape, Relu
-, Dense 256 80, Logit, Dense 80 10, Logit]
+## Generate `.cabal` file
 
-[ 'Shape [28 28], 'Shape [24 24 10], 'Shape [12 12 10], 'Shape [12 12 10]
-, 'Shape [8 8 16], 'Shape [4 4 16], 'Shape [256], 'Shape [256]
-, 'Shape [80], 'Shape [80], 'Shape [10], 'Shape [10]]
-```
+Run `hpack` in the root of the project and the file `tensor-safe.cabal` will be generated
 
-```
-Conv2D :: Nat -- number of channels (depth)
-       -> Nat -- number of filters
-       -> Nat -- number of rows in kernel filter
-       -> Nat -- number of cols in kernel filter
-       -> Nat -- the row stride in the conv filter
-       -> Nat -- the col stride in the conv filter
-       -> *
-```
+## Model definition
 
-## Current working examples
+Models can be defined as a type using the `MkINetwork` type function. The `MkINetwork` defines a
+valid instance of a Network model given a list of `Layers` and a spected input and iutput `Shapes`.
 
-Checkout the `TensorSafe.Examples` module:
+Here's an example of how to define a simple model for the `MNIST` dataset, using `Dense` layers:
 
 ```haskell
-type MyNet = Network
-             '[
-                 MaxPooling 2 2 2 2,
-                 Flatten,
-                 Dense 196 10,
-                 Logit,
-                 Relu
-              ]
-             '[
-                 'D2 28 28,
-                 'D2 14 14,
-                 'D1 196,
-                 'D1 10,
-                 'D1 10,
-                 'D1 10
-                --  'D1 11 -- doesn't work!!!
-              ]
+type MNIST = MkINetwork
+    '[
+        Flatten,
+        Dense 784 42,
+        Relu,
+        Dense 42 10,
+        Sigmoid
+    ]
+    ('D3 28 28 1)    -- Input
+    ('D1 10)         -- Output
 ```
 
-## New desirable example
-
-Since for the way of building Networks with the instanciated shapes is a bit tricky and also
-pretty annoying for the developers, it would be nicer to define a Generic Network type which
-defines just the Layers concatenation type like:
+After that, variable with the model type can be verified with the function `mkINetwork` like this:
 
 ```haskell
-type MyNetwork = Network
-               '[
-                   MaxPooling 2 2 2 2,
-                   Flatten,
-                   Dense 196 10,
-                   Logit,
-                   Relu
-                ]
+mnist :: MNIST
+mnist = mkINetwork
 ```
 
-With this and an input shape, then we could create a type function capable of returning all the
-expected outputs of the network. For instance:
+## Nesting networks definitions
+
+You can nest networks definitions easily by adding the networks as layers. For example, in the case of the `MNIST` model defined above, we can abstract the use of Dense and a activation function like this:
 
 ```haskell
-type MyNetworkShapeFlow = ShapeFlow MyNetwork ('D2 28 28)
--- :t MyNetworkShapeFlow = '[
---                         'D2 28 28,
---                         'D2 14 14,
---                         'D1 196,
---                         'D1 10,
---                         'D1 10,
---                         'D1 10
---                       ]
+type DenseRelu i o =
+    MkINetwork '[ Dense i o, Relu ] ('D1 i) ('D1 o)
+
+type DenseSigmoid i o =
+    MkINetwork '[ Dense i o, Sigmoid ] ('D1 i) ('D1 o)
+
+type MNIST = MkINetwork
+    '[
+        Flatten,
+        DenseRelu 784 42,
+        DenseSigmoid 42 10
+    ]
+    ('D3 28 28 1)    -- Input
+    ('D1 10)         -- Output
 ```
 
-So that we can create an instance of a Network like so:
+## Command line interface
 
-```haskell
-mkINetwork :: (net :: Netowork layers) -> (in :: Shape) -> INetwork layers (ShapeFlow MyNetwork in)
+> This interface will change in the near future
 
+You can install `tensor-safe` command line tool by running `stack build`. Then you can use it by using `stack exec tensor-safe -- check --path ./path-to-model.hs` or `stack exec tensor-safe -- compile --path ./path-to-model.hs --module-name SomeModule`.
 
-net  :: MyNetwork
-iNet :: INetwork '[ layers ] '[ outputs ]
-iNet = mkINetwork n (proxy ('D2 28 28))
+## Tools for JavaScript environment
+
+Add as development dependency the packages `babel-plugin-tensor-safe` and `eslint-plugin-tensor-safe`. These can be found in the `extra/javascript` folder in this project.
+
+You can add them directly from this project like this:
+
+```bash
+yarn add --dev file/:<path-to-tensor-safe>/extra/javascript/babel-plugin-tensor-safe
+
+yarn add --dev file/:<path-to-tensor-safe>/extra/javascript/eslint-plugin-tensor-safe
 ```
+
+Then add to the `.eslintrc.js` file in your JavaScript project the plugin `tensor-safe` and the rule `tensor-safe-model-invalid` like this:
+
+```js
+module.exports = {
+  plugins: [
+     ...
+     "tensor-safe"
+   ],
+  ...
+  rules: {
+    ...
+    "tensor-safe/invalid-model": 1
+    ...
+  }
+};
+```
+
+And for the Babel plugin add `"@babel/plugin-tensor-safe"` to the plugins list in the `.babelrc` file inside your JavaScript project.
+
+Then, you can write your deep learning model inside your JS files as in the following example:
+
+```js
+function createConvModel() {
+  safeModel`
+    '[
+        Conv2D 1 16 3 3 1 1,
+        Relu,
+        MaxPooling 2 2 2 2,
+        Conv2D 16 32 3 3 1 1,
+        Relu,
+        MaxPooling 2 2 2 2,
+        Conv2D 32 32 3 3 1 1,
+        Relu,
+        Flatten,
+        Dense 288 64,
+        Sigmoid,
+        Dense 64 10,
+        Sigmoid
+    ]
+    ('D3 28 28 1)  -- Input
+    ('D1 10)       -- Output
+`;
+
+  return model;
+}
+```
+
+## TODOs
+
+1. Create option for `compile` command to either output the compiled version of the model to the stdout or to a file with all the imports required to build the model.
+2. Use the `tensor-safe` command line tool installed using `stack install`. Right now there's an issue with this since, unlike `stack exec`, the project libraries are not available when running `tensor-safe` and the module interpretation library (`hint`) won't work.
+3. Improve JavaScript tools and publish them to `npm`. Also, improve the way we use `safeModel`, because right now is weird to refence a variable `model` below the model definition.
