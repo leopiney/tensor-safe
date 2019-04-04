@@ -13,7 +13,7 @@ import           GHC.TypeLits
 import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
--- | TODO
+-- | A 2D MaxPooling pooling that works for D2 and D3 shapes
 data MaxPooling :: Nat -> Nat -> Nat -> Nat -> Type where
     MaxPooling :: MaxPooling kernelRows kernelColumns strideRows strideColumns
 

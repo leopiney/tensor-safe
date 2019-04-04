@@ -14,7 +14,7 @@ import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
 
--- | TODO
+-- | A 2D Convolutional layer
 data Conv2D :: Nat -> Nat -> Nat -> Nat -> Nat -> Nat -> Type where
     Conv2D :: Conv2D channels filters kernelRows kernelColumns strideRows strideColumns
 

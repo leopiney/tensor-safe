@@ -92,16 +92,18 @@ type family ValidateOutput (layers :: [Type]) (sIn :: Shape) (sOut :: Shape) :: 
 --
 --
 
--- | TODO
+-- | Creates an INetwork type, and by "unsafe" I mean that I don't check for an expected output
 type family MkINetworkUnsafe (layers :: [Type]) (s :: Shape) :: Type where
     MkINetworkUnsafe ls s = INetwork ls (ComposeOut ls s)
 
--- | TODO
+-- | If the second type argument is 'True, then it returns the type t, otherwise it returns
+--   a default type. Note that for this example, ValidateOutput would raise an exception
+--   if the expected output and the actual one do not match.
 type family MaybeType (t :: Type) (b :: Bool) :: Type where
     MaybeType t 'False = Type -- HACK: ValidateOutput should raise an exception on this case
     MaybeType t 'True  = t
 
--- | TODO
+-- | Creates an INetwork type validating the the expected output and the computed one match.
 type family MkINetwork (layers :: [Type]) (sIn :: Shape) (sOut :: Shape) :: Type where
     MkINetworkUnsafe ls sIn sOut =
         MaybeType (INetwork ls (ComposeOut ls sIn)) (ValidateOutput ls sIn sOut)
@@ -200,9 +202,10 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
 
 -- | Instanciates a Network after defining a type definition, using MkINetworkUnsafe for example.
 --   After defining a variable with INetwork type, you can instanciate that variable like this:
---
---   myNet :: MNIST
---   myNet = mkINetwork
+--   ```
+--       myNet :: MNIST
+--       myNet = mkINetwork
+--   ```
 class ValidNetwork (xs :: [Type]) (ss :: [Shape]) where
     mkINetwork :: INetwork xs ss
 
@@ -222,9 +225,9 @@ instance ( SingI i
       ) => ValidNetwork (x ': xs) (i ': o ': rs) where
     mkINetwork = layer :~> mkINetwork
 
---
--- Compilation
---
+-- | Compilation: Gets the initial shape using Singleton instances. Since this is the function we
+--   run for transforming an INetwork to CNetwork, the `nested` argument of `toCNetwork'` is set
+--   to False.
 toCNetwork ::
     forall i x xs ss. ( SingI i
                       , Layer x

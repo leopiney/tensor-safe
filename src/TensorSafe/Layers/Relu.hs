@@ -5,7 +5,7 @@ import           Data.Map
 import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
--- | TODO
+-- | A ReLu activation function
 data Relu = Relu deriving Show
 
 instance Layer Relu where

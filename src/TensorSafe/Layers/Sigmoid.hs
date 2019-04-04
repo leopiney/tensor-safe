@@ -5,7 +5,7 @@ import           Data.Map
 import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
--- | TODO
+-- | A Sigmoid activation function
 data Sigmoid = Sigmoid deriving Show
 
 instance Layer Sigmoid where
