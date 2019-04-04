@@ -3,6 +3,7 @@ module TensorSafe.Layers (
     Dense,
     Dropout,
     Flatten,
+    LSTM,
     MaxPooling,
     Relu,
     Sigmoid
@@ -12,6 +13,7 @@ import           TensorSafe.Layers.Conv2D
 import           TensorSafe.Layers.Dense
 import           TensorSafe.Layers.Dropout
 import           TensorSafe.Layers.Flatten
+import           TensorSafe.Layers.LSTM
 import           TensorSafe.Layers.MaxPooling
 import           TensorSafe.Layers.Relu
 import           TensorSafe.Layers.Sigmoid

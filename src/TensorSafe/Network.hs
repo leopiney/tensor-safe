@@ -165,6 +165,13 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
     --
     --
     --
+    Out (LSTM units 'False) _           = 'D1 units
+    Out (LSTM units 'True)  ('D2 x _)   = 'D2 x units
+    Out (LSTM units 'True)  ('D3 x _ _) = 'D2 x units
+
+    --
+    --
+    --
     Out (MaxPooling k k' s s') ('D2 inputRows inputColumns) =
         ('D2 (1 + (Div (inputRows - k) s))
                 (1 + (Div (inputColumns - k') s'))
