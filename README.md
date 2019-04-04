@@ -136,9 +136,3 @@ function createConvModel() {
   return model;
 }
 ```
-
-## TODOs
-
-1. Create option for `compile` command to either output the compiled version of the model to the stdout or to a file with all the imports required to build the model.
-2. Use the `tensor-safe` command line tool installed using `stack install`. Right now there's an issue with this since, unlike `stack exec`, the project libraries are not available when running `tensor-safe` and the module interpretation library (`hint`) won't work.
-3. Improve JavaScript tools and publish them to `npm`. Also, improve the way we use `safeModel`, because right now is weird to refence a variable `model` below the model definition.
