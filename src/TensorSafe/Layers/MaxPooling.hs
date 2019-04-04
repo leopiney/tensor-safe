@@ -7,7 +7,6 @@ module TensorSafe.Layers.MaxPooling where
 import           Data.Kind               (Type)
 import           Data.Map
 import           Data.Proxy
-import           Data.Typeable           (typeOf)
 import           GHC.TypeLits
 
 import           TensorSafe.Compile.Expr
@@ -16,9 +15,7 @@ import           TensorSafe.Layer
 -- | A 2D MaxPooling pooling that works for D2 and D3 shapes
 data MaxPooling :: Nat -> Nat -> Nat -> Nat -> Type where
     MaxPooling :: MaxPooling kernelRows kernelColumns strideRows strideColumns
-
-instance (KnownNat k, KnownNat k', KnownNat s, KnownNat s') => Show (MaxPooling k k' s s') where
-    show = show . typeOf
+    deriving Show
 
 instance ( KnownNat kernelRows
          , KnownNat kernelColumns
