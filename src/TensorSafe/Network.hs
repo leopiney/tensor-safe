@@ -92,6 +92,7 @@ type family ValidateOutput (layers :: [Type]) (sIn :: Shape) (sOut :: Shape) :: 
 --
 --
 
+-- TODO: Rename `Unsafe`
 -- | Creates an INetwork type, and by "unsafe" I mean that I don't check for an expected output
 type family MkINetworkUnsafe (layers :: [Type]) (s :: Shape) :: Type where
     MkINetworkUnsafe ls s = INetwork ls (ComposeOut ls s)

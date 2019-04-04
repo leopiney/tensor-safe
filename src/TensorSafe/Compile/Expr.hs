@@ -13,6 +13,11 @@ data CNetwork = CNSequence CNetwork
               | CNNil
               deriving Show
 
+-- TODO
+-- Use generate instead of eval
+-- Use classes and instanciate for each language.
+-- ie: class Generate l where
+    --     generate :: l -> CN -> Text
 data Backend = JavaScript | Python deriving Show
 
 evalCNetwork :: Backend -> CNetwork -> Text

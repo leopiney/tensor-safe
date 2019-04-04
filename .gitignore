@@ -9,3 +9,6 @@
 .stack-work/
 tensor-safe.cabal
 *~
+
+# Cabal stuff
+/dist
