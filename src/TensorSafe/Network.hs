@@ -92,10 +92,10 @@ type family ValidateOutput (layers :: [Type]) (sIn :: Shape) (sOut :: Shape) :: 
 --
 --
 
--- TODO: Rename `Unsafe`
--- | Creates an INetwork type, and by "unsafe" I mean that I don't check for an expected output
-type family MkINetworkUnsafe (layers :: [Type]) (s :: Shape) :: Type where
-    MkINetworkUnsafe ls s = INetwork ls (ComposeOut ls s)
+-- | Creates an INetwork type, and by "unconstrained" I mean that I don't check for an
+--   expected output
+type family MkINetworkUnconstrained (layers :: [Type]) (s :: Shape) :: Type where
+    MkINetworkUnconstrained ls s = INetwork ls (ComposeOut ls s)
 
 -- | If the second type argument is 'True, then it returns the type t, otherwise it returns
 --   a default type. Note that for this example, ValidateOutput would raise an exception
@@ -106,7 +106,7 @@ type family MaybeType (t :: Type) (b :: Bool) :: Type where
 
 -- | Creates an INetwork type validating the the expected output and the computed one match.
 type family MkINetwork (layers :: [Type]) (sIn :: Shape) (sOut :: Shape) :: Type where
-    MkINetworkUnsafe ls sIn sOut =
+    MkINetworkUnconstrained ls sIn sOut =
         MaybeType (INetwork ls (ComposeOut ls sIn)) (ValidateOutput ls sIn sOut)
 
 --
@@ -208,7 +208,8 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
 --
 --
 
--- | Instanciates a Network after defining a type definition, using MkINetworkUnsafe for example.
+-- | Instanciates a Network after defining a type definition,
+--   using MkINetworkUnconstrained or MkINetwork, for example.
 --   After defining a variable with INetwork type, you can instanciate that variable like this:
 --   ```
 --       myNet :: MNIST
