@@ -1,14 +1,14 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 module TensorSafe (
-    Backend (..),
-    evalCNetwork,
+    JavaScript (..),
+    generate,
     INetwork,
     MkINetwork,
     mkINetwork,
     toCNetwork
 ) where
 
-import           TensorSafe.Compile.Expr (Backend (..), evalCNetwork)
+import           TensorSafe.Compile.Expr (JavaScript (..), generate)
 import           TensorSafe.Network      (INetwork, MkINetwork, mkINetwork,
                                           toCNetwork)

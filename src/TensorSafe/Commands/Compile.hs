@@ -6,9 +6,9 @@ import           System.Exit
 import           TensorSafe.Commands.Utils
 
 
-compile :: String -> String -> IO ()
-compile path moduleName = do
-    r <- runInterpreter $ checkAndCompile path moduleName
+compile :: String -> String -> String -> Maybe FilePath -> IO ()
+compile path moduleName backend out = do
+    r <- runInterpreter $ checkAndCompile path moduleName backend out
     case r of
         Left err -> do
             putStrLn $ errorString err
@@ -16,11 +16,16 @@ compile path moduleName = do
         Right () -> do
             exitWith $ ExitSuccess
 
-checkAndCompile :: String -> String -> Interpreter ()
-checkAndCompile path moduleName = do
+checkAndCompile :: String -> String -> String -> Maybe FilePath -> Interpreter ()
+checkAndCompile path moduleName backend out = do
     loadModules [path]
     setTopLevelModules [moduleName]
     setImportsQ [("TensorSafe", Nothing), ("Data.Text.Lazy", Nothing)]
 
-    r <- interpret "unpack $ evalCNetwork JavaScript (toCNetwork nn)" (as :: String)
-    liftIO $ putStrLn r
+    case out of
+        Nothing -> do
+            r <- interpret ("unpack $ generate " ++ backend ++ " (toCNetwork nn)") (as :: String)
+            liftIO $ putStrLn r
+        Just f -> do
+            r <- interpret ("unpack $ generate " ++ backend ++ " (toCNetwork nn)") (as :: String)
+            liftIO $ writeFile f r
