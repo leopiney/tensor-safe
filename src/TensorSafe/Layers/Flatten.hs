@@ -15,4 +15,4 @@ instance Layer Flatten where
                         Just shape -> fromList [("inputShape", shape)]
                         Nothing    -> empty
         in
-            CNLayer "flatten" params
+            CNLayer DFlatten params

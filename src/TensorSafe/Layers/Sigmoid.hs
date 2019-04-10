@@ -10,4 +10,4 @@ data Sigmoid = Sigmoid deriving Show
 
 instance Layer Sigmoid where
     layer = Sigmoid
-    compile _ _ = CNLayer "activation" (fromList [("activation", "\"sigmoid\"")])
+    compile _ _ = CNLayer DActivation (fromList [("activation", "\"sigmoid\"")])

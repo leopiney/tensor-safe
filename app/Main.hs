@@ -7,7 +7,7 @@ import           TensorSafe.Commands.Check    (check)
 import           TensorSafe.Commands.Compile  (compile)
 import           TensorSafe.Commands.Examples (examples)
 
-data Backend = JavaScript | Python deriving (Data,Typeable,Show,Eq)
+data Backend = JavaScript | Python deriving (Data, Eq, Show, Typeable)
 
 data TensorSafe = Check   { path :: FilePath }
                 | Compile {
@@ -17,7 +17,7 @@ data TensorSafe = Check   { path :: FilePath }
                     out         :: Maybe FilePath
                   }
                 | Examples
-                deriving (Data, Typeable, Show, Eq)
+                deriving (Data, Eq, Show, Typeable)
 
 cCheck :: TensorSafe
 cCheck = Check

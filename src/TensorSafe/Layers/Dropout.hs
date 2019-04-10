@@ -23,7 +23,7 @@ instance (KnownNat rate, KnownNat seed) => Layer (Dropout rate seed) where
         let rate = show $ natVal (Proxy :: Proxy rate)
             seed = show $ natVal (Proxy :: Proxy seed)
         in
-            CNLayer "dropout" (fromList [
+            CNLayer DDropout (fromList [
                 ("rate", rate),
                 ("seed", seed)
             ])

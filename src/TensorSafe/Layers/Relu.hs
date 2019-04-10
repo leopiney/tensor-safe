@@ -10,4 +10,4 @@ data Relu = Relu deriving Show
 
 instance Layer Relu where
     layer = Relu
-    compile _ _ = CNLayer "reLU" empty
+    compile _ _ = CNLayer DRelu empty

@@ -29,7 +29,7 @@ instance ( KnownNat kernelRows
             strideRows = natVal (Proxy :: Proxy strideRows)
             strideColumns = natVal (Proxy :: Proxy strideColumns)
         in
-            CNLayer "maxPooling2d" (
+            CNLayer DMaxPooling (
                 fromList [
                     ("poolSize", show [kernelRows, kernelColumns]),
                     ("strides", show [strideRows, strideColumns])

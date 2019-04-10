@@ -27,5 +27,5 @@ checkAndCompile path moduleName backend out = do
             r <- interpret ("unpack $ generate " ++ backend ++ " (toCNetwork nn)") (as :: String)
             liftIO $ putStrLn r
         Just f -> do
-            r <- interpret ("unpack $ generate " ++ backend ++ " (toCNetwork nn)") (as :: String)
+            r <- interpret ("unpack $ generateFile " ++ backend ++ " (toCNetwork nn)") (as :: String)
             liftIO $ writeFile f r

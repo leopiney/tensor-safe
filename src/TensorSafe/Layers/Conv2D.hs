@@ -42,4 +42,4 @@ instance ( KnownNat channels
                     ("strides", show [strideRows, strideColumns])
                 ])
         in
-            CNLayer "conv2d" params
+            CNLayer DConv2D params

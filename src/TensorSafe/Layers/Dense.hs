@@ -23,7 +23,7 @@ instance (KnownNat input, KnownNat output) => Layer (Dense input output) where
         let input = show $ natVal (Proxy :: Proxy input)
             output = show $ natVal (Proxy :: Proxy output)
         in
-            CNLayer "dense" (fromList [
+            CNLayer DDense (fromList [
               ("inputDim", input),
               ("units", output)
             ])

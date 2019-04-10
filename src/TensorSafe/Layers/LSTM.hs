@@ -24,7 +24,7 @@ instance (KnownNat units) => Layer (LSTM units b) where
         let units = show $ natVal (Proxy :: Proxy units)
             returnSequences = show $ (Proxy :: Proxy returnSequences)
         in
-            CNLayer "dense" (fromList [
+            CNLayer DLSTM (fromList [
                 ("units", units),
                 ("returnSequences", returnSequences)
             ])
