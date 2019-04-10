@@ -23,17 +23,13 @@ module.exports = () => {
               ""
             );
 
-            //
-            // TODO: Hardcoded values
-            // Use a template to inject the Haskell code and see if it's valid.
-            //
-            templatePath = "/Users/leo/Desktop/SomeModule.hs";
+            templatePath = "./templates/ModelModule.hs.template";
             templateContent = fs.readFileSync(templatePath, "utf8");
 
-            targetPath = "/Users/leo/Desktop/SomeModule_.hs";
+            targetPath = "./target/ModelModule.hs";
             targetContent = templateContent.replace("-- { CONTENT }", content);
 
-            moduleName = "SomeModule";
+            moduleName = "ModelModule";
 
             // Writes target content to a file
             fs.writeFileSync(targetPath, targetContent);
@@ -44,8 +40,8 @@ module.exports = () => {
             //
             try {
               commandContent = cp.execSync(
-                `stack exec tensor-safe -- compile --path ${targetPath} --module-name ${moduleName}`,
-                { cwd: "/Users/leo/Documents/tensor-safe", encoding: "utf8" }
+                `tensor-safe compile --path ${targetPath} --module-name ${moduleName} --javascript`,
+                { encoding: "utf8" }
               );
 
               var parsed = babel.parseSync(commandContent, {

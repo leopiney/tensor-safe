@@ -24,14 +24,10 @@ module.exports = {
                   ""
                 );
 
-                //
-                // TODO: Hardcoded values
-                // Use a template to inject the Haskell code and see if it's valid.
-                //
-                templatePath = "/Users/leo/Desktop/SomeModule.hs";
+                templatePath = "./templates/ModelModule.hs";
                 templateContent = fs.readFileSync(templatePath, "utf8");
 
-                targetPath = "/Users/leo/Desktop/SomeModule_.hs";
+                targetPath = "./target/ModelModule.hs";
                 targetContent = templateContent.replace(
                   "-- { CONTENT }",
                   content
@@ -45,8 +41,8 @@ module.exports = {
                 //
                 try {
                   commandContent = cp.execSync(
-                    `stack exec tensor-safe -- check --path ${targetPath}`,
-                    { cwd: "/Users/leo/Documents/tensor-safe" } // TODO: hardcoded
+                    `tensor-safe check --path ${targetPath}`,
+                    { encoding: "utf8" }
                   );
                 } catch (err) {
                   // If the command fails, send a message with the error
@@ -59,7 +55,7 @@ module.exports = {
                   );
                 }
 
-                // TODO: remove target temp file
+                fs.unlinkSync(targetPath);
               }
             }
           }
