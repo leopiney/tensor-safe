@@ -1,0 +1,142 @@
+Running Haddock on library for tensor-safe-0.1.0.0..
+Haddock coverage:
+   0% (  0 /  3) in 'TensorSafe.Commands.Utils'
+  Missing documentation for:
+    Module header
+    errorString (src/TensorSafe/Commands/Utils.hs:7)
+    say (src/TensorSafe/Commands/Utils.hs:16)
+   0% (  0 /  2) in 'TensorSafe.Commands.Compile'
+  Missing documentation for:
+    Module header
+    compile (src/TensorSafe/Commands/Compile.hs:9)
+   0% (  0 /  2) in 'TensorSafe.Commands.Check'
+  Missing documentation for:
+    Module header
+    check (src/TensorSafe/Commands/Check.hs:9)
+  22% (  2 /  9) in 'TensorSafe.Compile.Expr'
+  Missing documentation for:
+    Module header
+    DLayer (src/TensorSafe/Compile/Expr.hs:10)
+    CNetwork (src/TensorSafe/Compile/Expr.hs:21)
+    JavaScript (src/TensorSafe/Compile/Expr.hs:29)
+    Python (src/TensorSafe/Compile/Expr.hs:30)
+    paramsToJS (src/TensorSafe/Compile/Expr.hs:106)
+    paramsToPython (src/TensorSafe/Compile/Expr.hs:143)
+  83% (  5 /  6) in 'TensorSafe.Core'
+  Missing documentation for:
+    Module header
+   0% (  0 /  6) in 'TensorSafe.Generic.Shape'
+  Missing documentation for:
+    Module header
+    Shape (src/TensorSafe/Generic/Shape.hs:27)
+    UnsafeShape (src/TensorSafe/Generic/Shape.hs:20)
+    buildShape (src/TensorSafe/Generic/Shape.hs:66)
+    fromUnsafe (src/TensorSafe/Generic/Shape.hs:59)
+    toUnsafe (src/TensorSafe/Generic/Shape.hs:53)
+   0% (  0 /  7) in 'TensorSafe.Generic.Tensor'
+  Missing documentation for:
+    Module header
+    TensorType (src/TensorSafe/Generic/Tensor.hs:19)
+    ValidTensorType (src/TensorSafe/Generic/Tensor.hs:29)
+    Tensor (src/TensorSafe/Generic/Tensor.hs:38)
+    constant (src/TensorSafe/Generic/Tensor.hs:45)
+    add (src/TensorSafe/Generic/Tensor.hs:48)
+    matMult (src/TensorSafe/Generic/Tensor.hs:51)
+Warning: 'inputShape' is out of scope.
+    If you qualify the identifier, haddock can try to link it
+    it anyway.
+  33% (  1 /  3) in 'TensorSafe.Layer'
+  Missing documentation for:
+    Module header
+    InputShape (src/TensorSafe/Layer.hs:7)
+  50% (  1 /  2) in 'TensorSafe.Layers.Conv2D'
+  Missing documentation for:
+    Module header
+   0% (  0 /  2) in 'TensorSafe.Layers.Dense'
+  Missing documentation for:
+    Module header
+    Dense (src/TensorSafe/Layers/Dense.hs:16)
+  50% (  1 /  2) in 'TensorSafe.Layers.Dropout'
+  Missing documentation for:
+    Module header
+  50% (  1 /  2) in 'TensorSafe.Layers.Flatten'
+  Missing documentation for:
+    Module header
+  50% (  1 /  2) in 'TensorSafe.Layers.LSTM'
+  Missing documentation for:
+    Module header
+  50% (  1 /  2) in 'TensorSafe.Layers.MaxPooling'
+  Missing documentation for:
+    Module header
+  50% (  1 /  2) in 'TensorSafe.Layers.Relu'
+  Missing documentation for:
+    Module header
+  50% (  1 /  2) in 'TensorSafe.Layers.Sigmoid'
+  Missing documentation for:
+    Module header
+  78% (  7 /  9) in 'TensorSafe.Layers'
+  Missing documentation for:
+    Module header
+    Dense (src/TensorSafe/Layers/Dense.hs:16)
+  60% (  3 /  5) in 'TensorSafe.Shape'
+  Missing documentation for:
+    Module header
+    ShapeEquals' (src/TensorSafe/Shape.hs:81)
+Warning: 's' is out of scope.
+    If you qualify the identifier, haddock can try to link it
+    it anyway.
+Warning: 'nested' is out of scope.
+    If you qualify the identifier, haddock can try to link it
+    it anyway.
+  86% ( 12 / 14) in 'TensorSafe.Network'
+  Missing documentation for:
+    Module header
+    toCNetwork' (src/TensorSafe/Network.hs:255)
+  33% (  3 /  9) in 'TensorSafe'
+  Missing documentation for:
+    Module header
+    JavaScript (src/TensorSafe/Compile/Expr.hs:29)
+    Python (src/TensorSafe/Compile/Expr.hs:30)
+    generate (src/TensorSafe/Compile/Expr.hs:62)
+    generateFile (src/TensorSafe/Compile/Expr.hs:64)
+    mkINetwork (src/TensorSafe/Network.hs:219)
+   0% (  0 /  3) in 'TensorSafe.Examples.SimpleLSTMExample'
+  Missing documentation for:
+    Module header
+    MyLSTM (src/TensorSafe/Examples/SimpleLSTMExample.hs:11)
+    lstm (src/TensorSafe/Examples/SimpleLSTMExample.hs:13)
+   0% (  0 /  6) in 'TensorSafe.Examples.SimpleExample'
+  Missing documentation for:
+    Module header
+    MyNet (src/TensorSafe/Examples/SimpleExample.hs:11)
+    myNet (src/TensorSafe/Examples/SimpleExample.hs:12)
+    MyNet2 (src/TensorSafe/Examples/SimpleExample.hs:15)
+    myNet2 (src/TensorSafe/Examples/SimpleExample.hs:16)
+    myNet3 (src/TensorSafe/Examples/SimpleExample.hs:19)
+   0% (  0 /  7) in 'TensorSafe.Examples.MnistExample'
+  Missing documentation for:
+    Module header
+    DenseRelu (src/TensorSafe/Examples/MnistExample.hs:9)
+    DenseSigmoid (src/TensorSafe/Examples/MnistExample.hs:12)
+    MNIST (src/TensorSafe/Examples/MnistExample.hs:15)
+    mnist (src/TensorSafe/Examples/MnistExample.hs:32)
+    MNISTDense (src/TensorSafe/Examples/MnistExample.hs:36)
+    mnistDense (src/TensorSafe/Examples/MnistExample.hs:45)
+   0% (  0 /  6) in 'TensorSafe.Examples.Examples'
+  Missing documentation for:
+    Module header
+    genericTensorExample (src/TensorSafe/Examples/Examples.hs:16)
+    genericTensorExample2 (src/TensorSafe/Examples/Examples.hs:53)
+    simpleExample (src/TensorSafe/Examples/Examples.hs:67)
+    mnistExample (src/TensorSafe/Examples/Examples.hs:74)
+    mnistExampleDense (src/TensorSafe/Examples/Examples.hs:89)
+   0% (  0 /  2) in 'TensorSafe.Commands.Examples'
+  Missing documentation for:
+    Module header
+    examples (src/TensorSafe/Commands/Examples.hs:5)
+Warning: TensorSafe.Generic.Shape: could not find link destinations for:
+    MkShape
+Warning: TensorSafe.Shape: could not find link destinations for:
+    D:R:SingShapen0 D1Sing D2Sing D3Sing
+Documentation created:
+/Users/leo/Documents/tensor-safe/dist-newstyle/build/x86_64-osx/ghc-8.6.3/tensor-safe-0.1.0.0/doc/html/tensor-safe/index.html
