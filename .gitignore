@@ -5,10 +5,19 @@
 
 .history
 
+# TensorSafe stuff
+SomeModule.hs
+
 # Stack stuff
 .stack-work/
-tensor-safe.cabal
-*~
 
 # Cabal stuff
+tensor-safe.cabal
+cabal.sandbox.config
+.cabal-sandbox
+.ghc*
+
 /dist
+/dist-newstyle
+
+*~
