@@ -136,3 +136,18 @@ function createConvModel() {
   return model;
 }
 ```
+
+## Related projects
+
+This project was highly influenciated by [Grenade](https://github.com/HuwCampbell/grenade) 💣.
+Grenade is a really cool library to define deep neural networks which are validated using dependent types.
+What differences TensorSafe from Grenade the most is that TensorSafe doesn't run nor train the models, instead
+it compiles the model to external languages that are capable of performing all computations – like Keras
+for Python or JavaScript. Also, TensorSafe doesn't need to specifically declare all Shapes transformations
+for all the model layers, instead, it just needs the `input` and `output` Shapes to validate the model.
+
+Another worth looking library is [TensorFlow for Haskell](https://github.com/tensorflow/haskell).
+This library has all bindings for TensorFlow in C. The issue with this is that it doesn't perform
+a lot of type checkings at compilation time. However, there's an open branch that uses dependent
+types to solve many of these issues: https://github.com/helq/tensorflow-haskell-deptyped, but the
+solution still seems rather complicated for real use.
