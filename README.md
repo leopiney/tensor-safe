@@ -1,10 +1,9 @@
 # Tensor Safe
 
-`tensor-safe` is a framework to define deep learning models which structure is verified on
-compilation time. If the models are valid, these can be compiled to Keras framework in Python
-or JavaScript.
+`tensor-safe` is a dependently typed framework to define deep learning models which structure is verified on
+compilation time. If the models are valid, these can be compiled to Keras framework in Python or JavaScript.
 
-## Instalation instructions
+## Building instructions and development tools
 
 1. Install `ghc-mod`, `hpack` and `stylish-haskell` with `stack install`
 
