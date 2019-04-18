@@ -1,6 +1,10 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE GADTs     #-}
-module TensorSafe.Examples.MnistExample where
+{-| This module implements the MNIST examples using Convs and Dense layers. -}
+module TensorSafe.Examples.MnistExample (
+    mnist,
+    mnistDense
+) where
 
 import           TensorSafe.Layers
 import           TensorSafe.Network (MkINetwork, mkINetwork)
@@ -29,6 +33,7 @@ type MNIST = MkINetwork
     ('D3 28 28 1)    -- Input
     ('D1 10)       -- Output
 
+-- | MNIST implementation using Convolutional layers
 mnist :: MNIST
 mnist = mkINetwork
 
@@ -42,5 +47,6 @@ type MNISTDense = MkINetwork
     ('D3 28 28 1)    -- Input
     ('D1 10)       -- Output
 
+-- | MNIST implementation using just Dense layers
 mnistDense :: MNISTDense
 mnistDense = mkINetwork

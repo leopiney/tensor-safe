@@ -3,6 +3,8 @@
 {-# LANGUAGE TypeFamilies         #-}
 {-# LANGUAGE TypeOperators        #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-| This module adds some meaningfull type operations that are of use throughout all the project.
+-}
 module TensorSafe.Core where
 
 import           Data.Kind    (Type)

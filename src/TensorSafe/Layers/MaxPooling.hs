@@ -2,6 +2,7 @@
 {-# LANGUAGE GADTs               #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies        #-}
+{-| This module declares the 2D MaxPooling layer data type. -}
 module TensorSafe.Layers.MaxPooling where
 
 import           Data.Kind               (Type)

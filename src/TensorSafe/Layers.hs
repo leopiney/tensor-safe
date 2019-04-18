@@ -1,3 +1,4 @@
+{-| This module exposes all Layers declared at TensorSafe.Layers. -}
 module TensorSafe.Layers (
     Conv2D,
     Dense,

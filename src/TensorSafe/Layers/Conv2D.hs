@@ -2,6 +2,7 @@
 {-# LANGUAGE GADTs               #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies        #-}
+{-| This module declares the 2D convolutional layer data type. -}
 module TensorSafe.Layers.Conv2D where
 
 import           Data.Kind               (Type)

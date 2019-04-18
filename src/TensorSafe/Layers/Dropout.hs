@@ -2,6 +2,7 @@
 {-# LANGUAGE GADTs               #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies        #-}
+{-| This module declares the Dropout layer data type. -}
 module TensorSafe.Layers.Dropout (Dropout) where
 
 import           Data.Kind               (Type)

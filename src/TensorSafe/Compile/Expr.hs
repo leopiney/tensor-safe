@@ -1,12 +1,26 @@
 {-# LANGUAGE OverloadedStrings #-}
-module TensorSafe.Compile.Expr where
+{-| This module describes the expression structure of a INetwork instance.
+-- The INetwork can be structured into a Data structure called CNetwork, with which later
+-- to compilation external languages can be done.
+-}
+module TensorSafe.Compile.Expr (
+    DLayer (..),
+    CNetwork (..),
+    JavaScript (..),
+    Python (..),
+    Generator,
+    generate,
+    generateFile
+) where
 
 import           Data.Map
 import           Data.Text.Lazy as T
 import           Formatting
 import           Text.Casing    (camel, quietSnake)
 
-
+-- | Auxiliary data representation of Layers
+-- IMPORTANT: If you add new Layers definitions to `TensorSafe.Layers`, you should add
+-- the corresponding data structure here for the same layer.
 data DLayer = DConv2D
             | DDense
             | DDropout
@@ -17,7 +31,7 @@ data DLayer = DConv2D
             | DActivation
             deriving Show
 
-
+-- | Defines the
 data CNetwork = CNSequence CNetwork
               | CNCons CNetwork CNetwork
               | CNLayer DLayer (Map String String)
@@ -25,13 +39,14 @@ data CNetwork = CNSequence CNetwork
               | CNNil     -- End of possible nested sequence networks
               deriving Show
 
-
+-- | Support for JavaScript compilation
 data JavaScript = JavaScript deriving Show
+
+-- | Support for Python compilation
 data Python = Python deriving Show
 
---
---
 -- | Defines how are the layers going to be translated to the domain language
+-- This translates DLayer to String for each supported language
 class LayerGenerator l where
     generateName :: l -> DLayer -> String
 
@@ -55,27 +70,26 @@ instance LayerGenerator Python where
     generateName _ DRelu       = "ReLu"
     generateName _ DActivation = "Activation"
 
---
---
 -- | Class that defines which languages are supported for CNetworks generation to text
 class Generator l where
+
+    -- | Adds supports for a language. Generates a CNetwork to Text
     generate :: l -> CNetwork -> Text
 
+    -- | Similar to 'generate', but also adds necessary header and module lines of text so as to
+    -- have the CNetwork compiled at a separate file.
     generateFile :: l -> CNetwork -> Text
 
---
---
---  | Instance for JavaScript generation
 instance Generator JavaScript where
     generate l =
-        T.intercalate "\n" . evalJS
+        T.intercalate "\n" . generateJS
         where
-            evalJS :: CNetwork -> [Text]
-            evalJS (CNSequence cn)  = ["var model = tf.sequential();"] ++ evalJS cn
-            evalJS (CNCons cn1 cn2) = (evalJS cn1) ++ (evalJS cn2)
-            evalJS CNNil = []
-            evalJS CNReturn = []
-            evalJS (CNLayer layer params) =
+            generateJS :: CNetwork -> [Text]
+            generateJS (CNSequence cn)  = ["var model = tf.sequential();"] ++ generateJS cn
+            generateJS (CNCons cn1 cn2) = (generateJS cn1) ++ (generateJS cn2)
+            generateJS CNNil = []
+            generateJS CNReturn = []
+            generateJS (CNLayer layer params) =
                 [format
                     ("model.add(tf.layers." % string % "(" % string % "));")
                     (generateName l layer)
@@ -102,7 +116,7 @@ instance Generator JavaScript where
                 , "module.exports = model();"
                 ]
 
-
+-- | Converts a map to a parameter object in JavaScript
 paramsToJS :: Map String String -> String
 paramsToJS m =
     (foldrWithKey showParam "{ " m) ++ "}"
@@ -110,20 +124,16 @@ paramsToJS m =
         showParam :: String -> String -> String -> String
         showParam key value accum = accum ++ (camel key) ++ ": " ++ value ++ ", "
 
-
---
---
--- | Instance for Python generation
 instance Generator Python where
     generate l =
-        T.intercalate "\n" . evalPy
+        T.intercalate "\n" . generatePy
         where
-            evalPy :: CNetwork -> [Text]
-            evalPy (CNSequence cn)  = ["model = tf.keras.models.Sequential()"] ++ evalPy cn
-            evalPy (CNCons cn1 cn2) = (evalPy cn1) ++ (evalPy cn2)
-            evalPy CNNil = []
-            evalPy CNReturn = []
-            evalPy (CNLayer layer params) =
+            generatePy :: CNetwork -> [Text]
+            generatePy (CNSequence cn)  = ["model = tf.keras.models.Sequential()"] ++ generatePy cn
+            generatePy (CNCons cn1 cn2) = (generatePy cn1) ++ (generatePy cn2)
+            generatePy CNNil = []
+            generatePy CNReturn = []
+            generatePy (CNLayer layer params) =
                 [format
                     ("model.add(tf.layers." % string % "(" % string % "))")
                     (generateName l layer)
@@ -139,7 +149,7 @@ instance Generator Python where
                 , "\n"
                 ]
 
-
+-- | Converts a map to keyword arguments in Python
 paramsToPython :: Map String String -> String
 paramsToPython =
     foldrWithKey showParam ""

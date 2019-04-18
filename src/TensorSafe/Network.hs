@@ -8,7 +8,19 @@
 {-# LANGUAGE TypeOperators         #-}
 {-# LANGUAGE UndecidableInstances  #-}
 {-# OPTIONS_GHC -fplugin GHC.TypeLits.Extra.Solver #-}
-module TensorSafe.Network where
+{-| This module is the core of TensorSafe. It defines all Network data structures
+-- and types functions that respresent Layers modifications of shapes, as well as
+-- all needed information for compiling the Network structures to CNetworks for later code
+-- generation.
+-}
+module TensorSafe.Network (
+    Network (..),
+    INetwork (..),
+    MkINetwork,
+    ValidNetwork,
+    mkINetwork,
+    toCNetwork
+) where
 
 import           Data.Kind               (Type)
 import           Data.Singletons
@@ -37,7 +49,9 @@ instance (Show x, Show (Network xs)) => Show (Network (x ': xs)) where
     show (x :~~ xs) = show x ++ "\n :~~ " ++ show xs
 
 -- | A network that defines a specific sequence of layers with the corresponding shape
---   transformation along the network.
+-- transformation along the network. It's an Instance of a Network: given a Network and a initial
+-- Shape, this type structure can be generated automatically using the type functions defined in
+-- this module, like `Out` and `MkINetwork`.
 data INetwork :: [Type] -> [Shape] -> Type where
     INNil  :: SingI i
            => INetwork '[] '[i]
@@ -54,27 +68,28 @@ instance Show (INetwork '[] '[i]) where
 instance (Show x, Show (INetwork xs rs)) => Show (INetwork (x ': xs) (i ': rs)) where
     show (x :~> xs) = show x ++ "\n :~> " ++ show xs
 
+-- | This instance of INetwork as a Layer makes possible nesting INetworks
 instance ValidNetwork ls ss => Layer (INetwork ls ss) where
     layer = mkINetwork
     compile n i = toCNetwork' n True i
 
 --
---
+-- COMPUTING RESULTING SHAPES FROM A LIST OF LAYERS.
 --
 
 -- | Returns the result of applying all the layers transformation to a specific shape.
---   Given a list of layers, this returns the expected output for the computation of each layer
---   starting with the first layer transforming the Shape `s`.
---   For example, if the initial Shape is [28, 28] and the layers are [Relu, Flatten], the result
---   will be [784].
+-- Given a list of layers, this returns the expected output for the computation of each layer
+-- starting with the first layer transforming the `Shape` s.
+-- For example, if the initial Shape is [28, 28] and the layers are [Relu, Flatten], the result
+-- will be [784].
 type family ComputeOut (layers :: [Type]) (s :: Shape) :: Shape where
     ComputeOut '[] s      = s
     ComputeOut (l : ls) s = ComputeOut ls (Out l s)
 
--- | Returns a list of shapes describing all the transformations applied to a specific shape.
---   Given a list of layers return a type with all the Shapes from the initial Shape until the
---   last one. In theory, the last Shape should be the same than the ComputeOut function applied
---   to this same parameters.
+-- | Returns a list of shapes describing ALL the transformations applied to a specific shape.
+-- Given a list of layers return a type with all the Shapes from the initial Shape until the
+-- last one. In theory, the last Shape should be the same than the ComputeOut function applied
+-- to this same parameters.
 type family ComposeOut' (layers :: [Type]) (s :: Shape) :: [Shape] where
     ComposeOut' '[] s      = '[]
     ComposeOut' (l : ls) s = ((Out l s) ': (ComposeOut' ls (Out l s)))
@@ -89,7 +104,7 @@ type family ValidateOutput (layers :: [Type]) (sIn :: Shape) (sOut :: Shape) :: 
     ValidateOutput ls sIn sOut = ShapeEquals' (ComputeOut ls sIn) sOut
 
 --
---
+-- CREATE INETWORK TYPE INSTANCES FROM LIST OF LAYERS AND INTIAL AND ENDING SHAPES
 --
 
 -- | Creates an INetwork type, and by "unconstrained" I mean that I don't check for an
@@ -110,7 +125,7 @@ type family MkINetwork (layers :: [Type]) (sIn :: Shape) (sOut :: Shape) :: Type
         MaybeType (INetwork ls (ComposeOut ls sIn)) (ValidateOutput ls sIn sOut)
 
 --
---
+-- MAPPING TRANSFORMATIONS OF LAYERS AND SHAPES
 --
 
 -- | Defines the expected output of a layer
@@ -205,7 +220,7 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
                 ':<>: 'Text "\"")
 
 --
---
+-- INETWORK VALIDATION
 --
 
 -- | Instanciates a Network after defining a type definition,
@@ -216,6 +231,8 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
 --       myNet = mkINetwork
 --   ```
 class ValidNetwork (xs :: [Type]) (ss :: [Shape]) where
+
+    -- | Makes a valid instance of INetwork
     mkINetwork :: INetwork xs ss
 
     {-# MINIMAL mkINetwork #-}
@@ -234,8 +251,12 @@ instance ( SingI i
       ) => ValidNetwork (x ': xs) (i ': o ': rs) where
     mkINetwork = layer :~> mkINetwork
 
+--
+-- INETWORK MAPPING TO CNETWORK
+--
+
 -- | Compilation: Gets the initial shape using Singleton instances. Since this is the function we
---   run for transforming an INetwork to CNetwork, the `nested` argument of `toCNetwork'` is set
+--   run for transforming an INetwork to CNetwork, the nested argument of `toCNetwork'` is set
 --   to False.
 toCNetwork ::
     forall i x xs ss. ( SingI i
@@ -251,7 +272,7 @@ toCNetwork n =
         D3Sing a b c -> CNSequence (toCNetwork' n False (Just $ show [ natVal a
                                                                      , natVal b
                                                                      , natVal c]))
-
+-- | Helper function for `toCNetwork`
 toCNetwork' :: INetwork xs ss -> Bool -> Maybe String -> CNetwork
 toCNetwork' INNil nested _ =
     if nested

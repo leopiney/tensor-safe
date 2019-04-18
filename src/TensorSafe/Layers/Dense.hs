@@ -2,6 +2,7 @@
 {-# LANGUAGE GADTs               #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies        #-}
+{-| This module declares the Dense, a.k.a. FullyConnected, layer data type. -}
 module TensorSafe.Layers.Dense where
 
 import           Data.Kind               (Type)
@@ -13,6 +14,7 @@ import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
 
+-- | A classic Dense, or FullyConnected, layer with input and output parameters.
 data Dense :: Nat -> Nat -> Type where
     Dense :: Dense input output
     deriving Show

@@ -1,3 +1,4 @@
+{-| This module provides compilation and interpretation functions using the "hint" library. -}
 module TensorSafe.Commands.Compile (compile) where
 
 import           Language.Haskell.Interpreter
@@ -5,7 +6,7 @@ import           System.Exit
 
 import           TensorSafe.Commands.Utils
 
-
+-- | Compilation interface for the `compile` command. Given a path, module name.
 compile :: String -> String -> String -> Maybe FilePath -> IO ()
 compile path moduleName backend out = do
     r <- runInterpreter $ checkAndCompile path moduleName backend out
@@ -16,6 +17,10 @@ compile path moduleName backend out = do
         Right () -> do
             exitWith $ ExitSuccess
 
+-- | Invokes `Language.Haskell.Interpreter` to generate the CNetwork in the file with the specified
+-- path.
+-- Depending on the out parameter, the output will be redirected to the stdout or the the out
+-- path.
 checkAndCompile :: String -> String -> String -> Maybe FilePath -> Interpreter ()
 checkAndCompile path moduleName backend out = do
     loadModules [path]

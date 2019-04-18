@@ -7,6 +7,10 @@
 {-# LANGUAGE TypeFamilies         #-}
 {-# LANGUAGE TypeOperators        #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-| This module declares all Shape related functions and data structures, as well as all singleton
+-- instances for the Shape data type. This module was highly influenciated by Grenade, a Haskell
+-- library for deep learning with dependent types. See: https://github.com/HuwCampbell/grenade
+-}
 module TensorSafe.Shape where
 
 import           Data.Singletons
@@ -78,6 +82,8 @@ type family ShapeEquals (sIn :: Shape) (sOut :: Shape) :: Bool where
     ShapeEquals s s = 'True
     ShapeEquals _ _ = 'False
 
+-- | Same as ShapeEquals, which compares two Shapes at kinds level, but raises a TypeError exception
+-- if the Shapes are not the equal.
 type family ShapeEquals' (sIn :: Shape) (sOut :: Shape) :: Bool where
     ShapeEquals' s s = 'True
     ShapeEquals' s1 s2 =

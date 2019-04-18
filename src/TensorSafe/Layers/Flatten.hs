@@ -1,3 +1,4 @@
+{-| This module declares the Flatten layer data type. -}
 module TensorSafe.Layers.Flatten (Flatten) where
 
 import           Data.Map

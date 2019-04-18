@@ -1,3 +1,4 @@
+{-| This module declares the ReLu activation layer data type. -}
 module TensorSafe.Layers.Relu (Relu) where
 
 import           Data.Map

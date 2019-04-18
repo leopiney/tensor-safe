@@ -1,3 +1,4 @@
+{-| This module declares the Sigmoid activation layer data type. -}
 module TensorSafe.Layers.Sigmoid (Sigmoid) where
 
 import           Data.Map

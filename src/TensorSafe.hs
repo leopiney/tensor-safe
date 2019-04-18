@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-| This module declares what is visible to use TensorSafe as an API. -}
 module TensorSafe (
     JavaScript (..),
     Python (..),

@@ -2,6 +2,7 @@
 {-# LANGUAGE GADTs               #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies        #-}
+{-| This module declares the classing LSTM layer data type. -}
 module TensorSafe.Layers.LSTM where
 
 import           Data.Kind               (Type)
@@ -13,7 +14,7 @@ import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
 
--- | A 2D Convolutional layer
+-- | A LSTM layer with a number of units and a option to return the original sequences.
 data LSTM :: Nat -> Bool -> Type where
     LSTM :: LSTM units returnSequences
     deriving Show

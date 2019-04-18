@@ -1,13 +1,11 @@
-module TensorSafe.Commands.Examples where
+{-| This module implements the examples command for TensorSafe. -}
+module TensorSafe.Commands.Examples (examples) where
 
 import           TensorSafe.Examples.Examples
 
+-- | Outputs to stdout the results of the examples
 examples :: IO ()
 examples = do
-    genericTensorExample
-    putStrLn $ "\n\n"
-    genericTensorExample2
-    putStrLn $ "\n\n"
     simpleExample
     putStrLn $ "\n\n"
     mnistExample
