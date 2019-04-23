@@ -139,6 +139,17 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
     --
     --
     --
+    Out (Add _) s = s
+    -- Out (Add (INetwork ls (s : ss))) s = ComputeOut ls s
+
+    --
+    --
+    --
+    Out (BatchNormalization _ _ _) s = s
+
+    --
+    --
+    --
     Out (Conv2D 1 1 k k' s s') ('D2 inputRows inputColumns) =
         ('D2 (1 + (Div (inputRows - k) s))
                 (1 + (Div (inputColumns - k') s'))
@@ -181,6 +192,11 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
     --
     --
     --
+    Out Input s = s
+
+    --
+    --
+    --
     Out (LSTM units 'False) _           = 'D1 units
     Out (LSTM units 'True)  ('D2 x _)   = 'D2 x units
     Out (LSTM units 'True)  ('D3 x _ _) = 'D2 x units
@@ -202,21 +218,30 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
     --
     --
     --
-    Out Relu s           = s
+    Out Relu s = s
 
     --
     --
     --
-    Out Sigmoid s           = s
+    Out Sigmoid s = s
+
+    --
+    --
+    --
+    Out (ZeroPadding2D padding_rows padding_cols) ('D2 inputRows inputColumns) =
+        ('D2 (inputRows + (2 N.* padding_rows)) (inputColumns + (2 N.* padding_cols)))
+
+    Out (ZeroPadding2D padding_rows padding_cols) ('D3 inputRows inputColumns channels) =
+        ('D3 (inputRows + (2 N.* padding_rows)) (inputColumns + (2 N.* padding_cols)) channels)
 
     --
     -- Edge case or not defined raise an error
     --
-    Out l sOut =
+    Out l sIn =
         TypeError ( 'Text "Couldn't apply the Layer \""
                 ':<>: 'ShowType l
-                ':<>: 'Text "\" with the output Shape \""
-                ':<>: 'ShowType sOut
+                ':<>: 'Text "\" with the input Shape \""
+                ':<>: 'ShowType sIn
                 ':<>: 'Text "\"")
 
 --

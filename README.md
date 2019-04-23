@@ -71,6 +71,20 @@ type MNIST = MkINetwork
     ('D1 10)         -- Output
 ```
 
+## How to extend layers definitions
+
+Since this library only implements a subset of features that Keras implement, it's likely that for
+new projects you'll need to add new layers. Due to the modularization of the library, this can be
+done by adding the layer definitions in specific locations of the project:
+
+1. First, add a new auxiliary layer entry for the data type `DLayer` in `TensorSafe.Compile.Expr`.
+   This will make possible the compilation of the layer for all instances of `Generator`. Also, add
+   to the `LayerGenerator` entry for the newly added layer.
+2. Secondly, add the layer definition to the `TensorSafe/Layers` folder. You can copy the
+   definitions from the currently defined layers.
+3. Then, import and expose your layer definition in the `TensorSafe.Layers` module.
+4. Finally, declare how your layer transforms a specific Shape in the `Out` type function.
+
 ## Command line interface
 
 > This interface will change in the near future
