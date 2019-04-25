@@ -60,8 +60,8 @@ type ResNet50 img_size channels =
      -- Second block
      , Add (ConvBlock 256 3 1 128 128 512) (Shortcut 256 1 512) , Relu
      , Add (IdentityBlock 512 3 128 128 512) '[Input] , Relu
-     , Add (IdentityBlock 512 3 128 128 512) '[Input] , Relu
-     , Add (IdentityBlock 512 3 128 128 512) '[Input] , Relu
+    --  , Add (IdentityBlock 512 3 128 128 512) '[Input] , Relu
+    --  , Add (IdentityBlock 512 3 128 128 512) '[Input] , Relu
 
      -- Third block
     --  , Add (ConvBlock 512 3 1 256 256 1024) (Shortcut 512 1 1024) , Relu
