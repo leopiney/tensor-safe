@@ -13,14 +13,15 @@
 -- all needed information for compiling the Network structures to CNetworks for later code
 -- generation.
 -}
-module TensorSafe.Network (
-    Network (..),
-    INetwork (..),
-    MkINetwork,
-    ValidNetwork,
-    mkINetwork,
-    toCNetwork
-) where
+-- module TensorSafe.Network (
+--     Network (..),
+--     INetwork (..),
+--     MkINetwork,
+--     ValidNetwork,
+--     mkINetwork,
+--     toCNetwork
+-- ) where
+module TensorSafe.Network where
 
 import           Data.Kind               (Type)
 import           Data.Singletons
@@ -128,6 +129,10 @@ type family MkINetwork (layers :: [Type]) (sIn :: Shape) (sOut :: Shape) :: Type
 -- MAPPING TRANSFORMATIONS OF LAYERS AND SHAPES
 --
 
+type family MaybeShape (s :: Shape) (b :: Bool) :: Shape where
+    MaybeType s 'False = 'D1 0 -- HACK: ShapeEquals' should raise an exception on this case
+    MaybeType s 'True  = s
+
 -- | Defines the expected output of a layer
 --   This type function should be instanciated for each of the Layers defined.
 type family Out (l :: Type) (s :: Shape) :: Shape where
@@ -139,7 +144,10 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
     --
     --
     --
-    Out (Add _) s = s
+    Out (Add ls1 ls2) sIn =
+        MaybeShape
+            (ComputeOut ls1 sIn)
+            (ShapeEquals' (ComputeOut ls1 sIn) (ComputeOut ls2 sIn))  -- Validation that computes the same
     -- Out (Add (INetwork ls (s : ss))) s = ComputeOut ls s
 
     --
@@ -188,6 +196,11 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
     Out Flatten ('D1 x)     = 'D1 x
     Out Flatten ('D2 x y)   = 'D1 (x N.* y)
     Out Flatten ('D3 x y z) = 'D1 (x N.* y N.* z)
+
+    --
+    --
+    --
+    Out GlobalAvgPooling2D ('D3 _ _ z) = 'D1 z
 
     --
     --

@@ -7,81 +7,80 @@
 module TensorSafe.Examples.ResNet50Example where
 
 import           TensorSafe.Layers
-import           TensorSafe.Network (MkINetwork, mkINetwork)
+-- import           TensorSafe.Network (MkINetwork, mkINetwork)
+import           TensorSafe.Network
 import           TensorSafe.Shape
 
 
-type IdentityBlock inputNetwork axis kernel_size filters1 filters2 filters3 i o =
-    MkINetwork
-    '[
-        Conv2D 1 filters1 1 1 1 1,
-        BatchNormalization axis 99 1,
-        Relu,
-        Conv2D 1 filters2 kernel_size kernel_size 1 1,
-        BatchNormalization axis 99 1,
-        Relu,
-        Conv2D 1 filters3 1 1 1 1,
-        BatchNormalization axis 99 1,
-        Relu,
-        Add inputNetwork,
-        Relu
-    ]
-    i    -- Input
-    o    -- Output
+type IdentityBlock channels kernel_size filters1 filters2 filters3 =
+    '[ Conv2D channels filters1 1 1 1 1
+     , BatchNormalization 3 99 1
+     , Relu
+     , Conv2D filters1 filters2 kernel_size kernel_size 1 1
+     , BatchNormalization 3 99 1
+     , ZeroPadding2D 1 1
+     , Relu
+     , Conv2D filters2 filters3 1 1 1 1
+     , BatchNormalization 3 99 1
+     ]
+
+type Shortcut channels stride_size filters3 =
+    '[ Conv2D channels filters3 1 1 stride_size stride_size
+     , BatchNormalization 3 99 1
+     ]
 
 
-type Shortcut axis channels filters3 stride_size i o =
-    MkINetwork
-    '[
-        Conv2D channels filters3 1 1 stride_size stride_size,
-        BatchNormalization axis 99 1
-    ]
-    i    -- Input
-    o    -- Output
+type ConvBlock channels kernel_size stride_size filters1 filters2 filters3 =
+    '[ Conv2D channels filters1 1 1 stride_size stride_size
+     , BatchNormalization 3 99 1
+     , Relu
+     , Conv2D filters1 filters2 kernel_size kernel_size 1 1
+     , ZeroPadding2D 1 1
+     , BatchNormalization 3 99 1
+     , Relu
+     , Conv2D filters2 filters3 1 1 1 1
+     , BatchNormalization 3 99 1
+     ]
 
-
-type ConvBlock shortcut axis channels kernel_size stride_size filters1 filters2 filters3 i o =
-    MkINetwork
-    '[
-        Conv2D channels filters1 1 1 stride_size stride_size,
-        BatchNormalization axis 99 1,
-        Relu,
-        Conv2D filters1 filters2 kernel_size kernel_size 1 1,
-        BatchNormalization axis 99 1,
-        Relu,
-        Conv2D filters2 filters3 1 1 1 1,
-        BatchNormalization axis 99 1,
-        Relu,
-        Add shortcut,
-        Relu
-    ]
-    i    -- Input
-    o
-type ResNet50 axis img_size channels =
+type ResNet50 img_size channels =
     MkINetwork
     '[ Input
      , ZeroPadding2D 3 3
      , Conv2D channels 64 7 7 2 2
-     , BatchNormalization axis 99 1
+     , BatchNormalization 3 99 1
      , Relu
      , ZeroPadding2D 1 1
      , MaxPooling 3 3 2 2
-    --  conv_block(x, 3, [64, 64, 256], stage=2, block='a', strides=(1, 1))
-    -- ConvBlock shortcut axis kernel_size stride_size filters1 filters2 filters3 =
-     , ConvBlock
-        (Shortcut axis 64 256 1 ('D3 54 54 64) ('D3 54 54 256))
-        axis
-        64
-        3
-        1
-        64
-        64
-        256
-        ('D3 56 56 64)
-        ('D3 54 54 256)
+
+    -- First block
+     , Add (ConvBlock 64 3 1 64 64 256) (Shortcut 64 1 256) , Relu
+     , Add (IdentityBlock 256 3 64 64 256) '[Input] , Relu
+     , Add (IdentityBlock 256 3 64 64 256) '[Input] , Relu
+
+     -- Second block
+     , Add (ConvBlock 256 3 1 128 128 512) (Shortcut 256 1 512) , Relu
+     , Add (IdentityBlock 512 3 128 128 512) '[Input] , Relu
+     , Add (IdentityBlock 512 3 128 128 512) '[Input] , Relu
+     , Add (IdentityBlock 512 3 128 128 512) '[Input] , Relu
+
+     -- Third block
+    --  , Add (ConvBlock 512 3 1 256 256 1024) (Shortcut 512 1 1024) , Relu
+    --  , Add (IdentityBlock 1024 3 256 256 1024) '[Input] , Relu
+    --  , Add (IdentityBlock 1024 3 256 256 1024) '[Input] , Relu
+    --  , Add (IdentityBlock 1024 3 256 256 1024) '[Input] , Relu
+    --  , Add (IdentityBlock 1024 3 256 256 1024) '[Input] , Relu
+    --  , Add (IdentityBlock 1024 3 256 256 1024) '[Input] , Relu
+
+    --  -- Fourth block
+    --  , Add (ConvBlock 1024 3 1 512 512 2048) (Shortcut 512 1 2048) , Relu
+    --  , Add (IdentityBlock 1024 3 512 512 2048) '[Input] , Relu
+    --  , Add (IdentityBlock 1024 3 512 512 2048) '[Input] , Relu
+
+     , GlobalAvgPooling2D
+     , Dense 512 1000
     ]
     ('D3 img_size img_size channels)    -- Input
-    ('D1 10)       -- Output
+    ('D1 1000)                            -- Output
 
-resnet50 :: ResNet50 3 224 1
+resnet50 :: ResNet50 224 1
 resnet50 = mkINetwork

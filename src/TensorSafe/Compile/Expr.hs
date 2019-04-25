@@ -28,6 +28,7 @@ data DLayer = DActivation
             | DDense
             | DDropout
             | DFlatten
+            | DGlobalAvgPooling2D
             | DInput
             | DLSTM
             | DMaxPooling
@@ -63,6 +64,7 @@ instance LayerGenerator JavaScript where
     generateName _ DDense              = "dense"
     generateName _ DDropout            = "dropout"
     generateName _ DFlatten            = "flatten"
+    generateName _ DGlobalAvgPooling2D = "globalAvgeragePooling2D"
     generateName _ DInput              = "input"
     generateName _ DLSTM               = "lstm"
     generateName _ DMaxPooling         = "maxPooling2d"
@@ -77,6 +79,7 @@ instance LayerGenerator Python where
     generateName _ DDense              = "Dense"
     generateName _ DDropout            = "Dropout"
     generateName _ DFlatten            = "Flatten"
+    generateName _ DGlobalAvgPooling2D = "GlobalAvgeragePooling2D"
     generateName _ DInput              = "Input"
     generateName _ DLSTM               = "LSTM"
     generateName _ DMaxPooling         = "MaxPool2D"
