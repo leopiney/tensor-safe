@@ -1,13 +1,16 @@
 {
   "name": "@babel/plugin-tensor-safe",
-  "private": true,
   "dependencies": {
     "@babel/core": "^7.1.2"
   },
   "main": "index.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "author": "Leonardo Piñeyro",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leopiney/tensor-safe/tree/master/extra/javascript/babel-plugin-tensor-safe"
+  },
   "keywords": [
     "babel-plugin"
   ]

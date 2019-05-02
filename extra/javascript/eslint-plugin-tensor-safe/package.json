@@ -4,6 +4,10 @@
   "main": "index.js",
   "license": "MIT",
   "author": "Leonardo Piñeyro",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leopiney/tensor-safe/tree/master/extra/javascript/eslint-plugin-tensor-safe"
+  },
   "keywords": [
     "eslint-plugin"
   ]
