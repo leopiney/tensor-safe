@@ -133,6 +133,10 @@ type family MaybeShape (s :: Shape) (b :: Bool) :: Shape where
     MaybeType s 'False = 'D1 0 -- HACK: ShapeEquals' should raise an exception on this case
     MaybeType s 'True  = s
 
+
+type family Add' (layers :: [Type]) (layers2 :: [Type]) (shape :: Shape) where
+    Add' ls1 _ sIn = ComputeOut ls1 sIn
+
 -- | Defines the expected output of a layer
 --   This type function should be instanciated for each of the Layers defined.
 type family Out (l :: Type) (s :: Shape) :: Shape where
@@ -144,10 +148,10 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
     --
     --
     --
-    Out (Add ls1 ls2) sIn =
-        MaybeShape
-            (ComputeOut ls1 sIn)
-            (ShapeEquals' (ComputeOut ls1 sIn) (ComputeOut ls2 sIn))  -- Validation that computes the same
+    Out (Add ls1 ls2) sIn = Add' ls1 ls2 sIn
+        -- MaybeShape
+        --     (ComputeOut ls1 sIn)
+        --     (ShapeEquals' (ComputeOut ls1 sIn) (ComputeOut ls2 sIn))  -- Validation that computes the same
     -- Out (Add (INetwork ls (s : ss))) s = ComputeOut ls s
 
     --

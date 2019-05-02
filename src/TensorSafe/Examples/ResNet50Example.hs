@@ -60,24 +60,24 @@ type ResNet50 img_size channels =
      -- Second block
      , Add (ConvBlock 256 3 1 128 128 512) (Shortcut 256 1 512) , Relu
      , Add (IdentityBlock 512 3 128 128 512) '[Input] , Relu
-    --  , Add (IdentityBlock 512 3 128 128 512) '[Input] , Relu
-    --  , Add (IdentityBlock 512 3 128 128 512) '[Input] , Relu
+     , Add (IdentityBlock 512 3 128 128 512) '[Input] , Relu
+     , Add (IdentityBlock 512 3 128 128 512) '[Input] , Relu
 
-     -- Third block
-    --  , Add (ConvBlock 512 3 1 256 256 1024) (Shortcut 512 1 1024) , Relu
-    --  , Add (IdentityBlock 1024 3 256 256 1024) '[Input] , Relu
-    --  , Add (IdentityBlock 1024 3 256 256 1024) '[Input] , Relu
-    --  , Add (IdentityBlock 1024 3 256 256 1024) '[Input] , Relu
-    --  , Add (IdentityBlock 1024 3 256 256 1024) '[Input] , Relu
-    --  , Add (IdentityBlock 1024 3 256 256 1024) '[Input] , Relu
+    --  Third block
+     , Add (ConvBlock 512 3 1 256 256 1024) (Shortcut 512 1 1024) , Relu
+     , Add (IdentityBlock 1024 3 256 256 1024) '[Input] , Relu
+     , Add (IdentityBlock 1024 3 256 256 1024) '[Input] , Relu
+     , Add (IdentityBlock 1024 3 256 256 1024) '[Input] , Relu
+     , Add (IdentityBlock 1024 3 256 256 1024) '[Input] , Relu
+     , Add (IdentityBlock 1024 3 256 256 1024) '[Input] , Relu
 
     --  -- Fourth block
-    --  , Add (ConvBlock 1024 3 1 512 512 2048) (Shortcut 512 1 2048) , Relu
-    --  , Add (IdentityBlock 1024 3 512 512 2048) '[Input] , Relu
-    --  , Add (IdentityBlock 1024 3 512 512 2048) '[Input] , Relu
+     , Add (ConvBlock 1024 3 1 512 512 2048) (Shortcut 1024 1 2048) , Relu
+     , Add (IdentityBlock 2048 3 512 512 2048) '[Input] , Relu
+     , Add (IdentityBlock 2048 3 512 512 2048) '[Input] , Relu
 
      , GlobalAvgPooling2D
-     , Dense 512 1000
+     , Dense 2048 1000
     ]
     ('D3 img_size img_size channels)    -- Input
     ('D1 1000)                            -- Output
