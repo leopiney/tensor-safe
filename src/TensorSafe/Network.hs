@@ -13,14 +13,15 @@
 -- all needed information for compiling the Network structures to CNetworks for later code
 -- generation.
 -}
-module TensorSafe.Network (
-    Network (..),
-    INetwork (..),
-    MkINetwork,
-    ValidNetwork,
-    mkINetwork,
-    toCNetwork
-) where
+-- module TensorSafe.Network (
+--     Network (..),
+--     INetwork (..),
+--     MkINetwork,
+--     ValidNetwork,
+--     mkINetwork,
+--     toCNetwork
+-- ) where
+module TensorSafe.Network where
 
 import           Data.Kind               (Type)
 import           Data.Singletons
@@ -128,6 +129,14 @@ type family MkINetwork (layers :: [Type]) (sIn :: Shape) (sOut :: Shape) :: Type
 -- MAPPING TRANSFORMATIONS OF LAYERS AND SHAPES
 --
 
+type family MaybeShape (s :: Shape) (b :: Bool) :: Shape where
+    MaybeType s 'False = 'D1 0 -- HACK: ShapeEquals' should raise an exception on this case
+    MaybeType s 'True  = s
+
+
+type family Add' (layers :: [Type]) (layers2 :: [Type]) (shape :: Shape) where
+    Add' ls1 _ sIn = ComputeOut ls1 sIn
+
 -- | Defines the expected output of a layer
 --   This type function should be instanciated for each of the Layers defined.
 type family Out (l :: Type) (s :: Shape) :: Shape where
@@ -135,6 +144,20 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
     --
     --
     Out (INetwork ls (s : ss)) s = ComputeOut ls s
+
+    --
+    --
+    --
+    Out (Add ls1 ls2) sIn = Add' ls1 ls2 sIn
+        -- MaybeShape
+        --     (ComputeOut ls1 sIn)
+        --     (ShapeEquals' (ComputeOut ls1 sIn) (ComputeOut ls2 sIn))  -- Validation that computes the same
+    -- Out (Add (INetwork ls (s : ss))) s = ComputeOut ls s
+
+    --
+    --
+    --
+    Out (BatchNormalization _ _ _) s = s
 
     --
     --
@@ -181,6 +204,16 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
     --
     --
     --
+    Out GlobalAvgPooling2D ('D3 _ _ z) = 'D1 z
+
+    --
+    --
+    --
+    Out Input s = s
+
+    --
+    --
+    --
     Out (LSTM units 'False) _           = 'D1 units
     Out (LSTM units 'True)  ('D2 x _)   = 'D2 x units
     Out (LSTM units 'True)  ('D3 x _ _) = 'D2 x units
@@ -202,21 +235,30 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
     --
     --
     --
-    Out Relu s           = s
+    Out Relu s = s
 
     --
     --
     --
-    Out Sigmoid s           = s
+    Out Sigmoid s = s
+
+    --
+    --
+    --
+    Out (ZeroPadding2D padding_rows padding_cols) ('D2 inputRows inputColumns) =
+        ('D2 (inputRows + (2 N.* padding_rows)) (inputColumns + (2 N.* padding_cols)))
+
+    Out (ZeroPadding2D padding_rows padding_cols) ('D3 inputRows inputColumns channels) =
+        ('D3 (inputRows + (2 N.* padding_rows)) (inputColumns + (2 N.* padding_cols)) channels)
 
     --
     -- Edge case or not defined raise an error
     --
-    Out l sOut =
+    Out l sIn =
         TypeError ( 'Text "Couldn't apply the Layer \""
                 ':<>: 'ShowType l
-                ':<>: 'Text "\" with the output Shape \""
-                ':<>: 'ShowType sOut
+                ':<>: 'Text "\" with the input Shape \""
+                ':<>: 'ShowType sIn
                 ':<>: 'Text "\"")
 
 --

@@ -21,18 +21,24 @@ import           Text.Casing    (camel, quietSnake)
 -- | Auxiliary data representation of Layers
 -- IMPORTANT: If you add new Layers definitions to `TensorSafe.Layers`, you should add
 -- the corresponding data structure here for the same layer.
-data DLayer = DConv2D
+data DLayer = DActivation
+            | DAdd
+            | DBatchNormalization
+            | DConv2D
             | DDense
             | DDropout
             | DFlatten
+            | DGlobalAvgPooling2D
+            | DInput
             | DLSTM
             | DMaxPooling
             | DRelu
-            | DActivation
+            | DZeroPadding2D
             deriving Show
 
 -- | Defines the
 data CNetwork = CNSequence CNetwork
+              | CNAdd CNetwork CNetwork
               | CNCons CNetwork CNetwork
               | CNLayer DLayer (Map String String)
               | CNReturn  -- End of initial sequence network
@@ -51,24 +57,34 @@ class LayerGenerator l where
     generateName :: l -> DLayer -> String
 
 instance LayerGenerator JavaScript where
-    generateName _ DConv2D     = "conv2d"
-    generateName _ DDense      = "dense"
-    generateName _ DDropout    = "dropout"
-    generateName _ DFlatten    = "flatten"
-    generateName _ DLSTM       = "lstm"
-    generateName _ DMaxPooling = "maxPooling2d"
-    generateName _ DRelu       = "reLU"
-    generateName _ DActivation = "activation"
+    generateName _ DActivation         = "activation"
+    generateName _ DAdd                = "addStrict"
+    generateName _ DBatchNormalization = "batchNormalization"
+    generateName _ DConv2D             = "conv2d"
+    generateName _ DDense              = "dense"
+    generateName _ DDropout            = "dropout"
+    generateName _ DFlatten            = "flatten"
+    generateName _ DGlobalAvgPooling2D = "globalAvgeragePooling2D"
+    generateName _ DInput              = "input"
+    generateName _ DLSTM               = "lstm"
+    generateName _ DMaxPooling         = "maxPooling2d"
+    generateName _ DRelu               = "reLU"
+    generateName _ DZeroPadding2D      = "zeroPadding2D"
 
 instance LayerGenerator Python where
-    generateName _ DConv2D     = "Conv2D"
-    generateName _ DDense      = "Dense"
-    generateName _ DDropout    = "Dropout"
-    generateName _ DFlatten    = "Flatten"
-    generateName _ DLSTM       = "LSTM"
-    generateName _ DMaxPooling = "MaxPool2D"
-    generateName _ DRelu       = "ReLu"
-    generateName _ DActivation = "Activation"
+    generateName _ DActivation         = "Activation"
+    generateName _ DAdd                = "add"
+    generateName _ DBatchNormalization = "BatchNormalization"
+    generateName _ DConv2D             = "Conv2D"
+    generateName _ DDense              = "Dense"
+    generateName _ DDropout            = "Dropout"
+    generateName _ DFlatten            = "Flatten"
+    generateName _ DGlobalAvgPooling2D = "GlobalAvgeragePooling2D"
+    generateName _ DInput              = "Input"
+    generateName _ DLSTM               = "LSTM"
+    generateName _ DMaxPooling         = "MaxPool2D"
+    generateName _ DRelu               = "ReLu"
+    generateName _ DZeroPadding2D      = "ZeroPadding2D"
 
 -- | Class that defines which languages are supported for CNetworks generation to text
 class Generator l where
