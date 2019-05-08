@@ -1,3 +1,9 @@
+<div align="center">
+  <img src="logo.png" height="256px">
+</div>
+
+---
+
 # Tensor Safe
 
 `tensor-safe` is a dependently typed framework to define deep learning models which structure is verified on
