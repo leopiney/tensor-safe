@@ -250,6 +250,19 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
     --
     --
     --
+    Out (UpSampling rows columns) ('D2 inputRows inputColumns) =
+        ('D2 (inputRows N.* rows) (inputColumns N.* columns))
+
+    Out (UpSampling rows columns) ('D3 inputRows inputColumns channels) =
+        ('D3
+            (inputRows N.* rows)
+            (inputColumns N.* columns)
+            channels
+        )
+
+    --
+    --
+    --
     Out (ZeroPadding2D padding_rows padding_cols) ('D2 inputRows inputColumns) =
         ('D2 (inputRows + (2 N.* padding_rows)) (inputColumns + (2 N.* padding_cols)))
 

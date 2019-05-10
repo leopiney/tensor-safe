@@ -13,6 +13,7 @@ module TensorSafe.Layers (
     Relu,
     Sigmoid,
     Softmax,
+    UpSampling,
     ZeroPadding2D
 ) where
 
@@ -29,4 +30,5 @@ import           TensorSafe.Layers.MaxPooling
 import           TensorSafe.Layers.Relu
 import           TensorSafe.Layers.Sigmoid
 import           TensorSafe.Layers.Softmax
+import           TensorSafe.Layers.UpSampling
 import           TensorSafe.Layers.ZeroPadding2D

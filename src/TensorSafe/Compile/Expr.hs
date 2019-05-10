@@ -33,6 +33,7 @@ data DLayer = DActivation
             | DLSTM
             | DMaxPooling
             | DRelu
+            | DUpSampling
             | DZeroPadding2D
             deriving Show
 
@@ -69,6 +70,7 @@ instance LayerGenerator JavaScript where
     generateName _ DLSTM               = "lstm"
     generateName _ DMaxPooling         = "maxPooling2d"
     generateName _ DRelu               = "reLU"
+    generateName _ DUpSampling         = "upSampling2D"
     generateName _ DZeroPadding2D      = "zeroPadding2D"
 
 instance LayerGenerator Python where
@@ -84,6 +86,7 @@ instance LayerGenerator Python where
     generateName _ DLSTM               = "LSTM"
     generateName _ DMaxPooling         = "MaxPool2D"
     generateName _ DRelu               = "ReLu"
+    generateName _ DUpSampling         = "UpSampling2D"
     generateName _ DZeroPadding2D      = "ZeroPadding2D"
 
 -- | Class that defines which languages are supported for CNetworks generation to text
