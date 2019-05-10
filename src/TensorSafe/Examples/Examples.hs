@@ -9,7 +9,9 @@ module TensorSafe.Examples.Examples (
 
 import           Data.Text.Lazy                    (unpack)
 
-import           TensorSafe.Compile.Expr           (JavaScript (..), generate)
+import           TensorSafe.Compile.Expr           (JavaScript (..),
+                                                    Python (..), generate,
+                                                    generateFile)
 import           TensorSafe.Examples.MnistExample
 import           TensorSafe.Examples.SimpleExample
 import           TensorSafe.Network                (toCNetwork)
@@ -60,7 +62,10 @@ mnistExampleDense =
         putStrLn $ "-------------"
         putStrLn $ show (toCNetwork mnistDense)
         putStrLn $ "\n"
-        putStrLn $ "MNIST generation"
+        putStrLn $ "MNIST generation JavaScript"
         putStrLn $ "-------------"
         putStrLn $ unpack $ generate JavaScript (toCNetwork mnistDense)
+        putStrLn $ "MNIST generation Python"
+        putStrLn $ "-------------"
+        putStrLn $ unpack $ generateFile Python (toCNetwork mnistDense)
 

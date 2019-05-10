@@ -38,8 +38,8 @@ data Network :: [Type] -> Type where
   NNil  :: Network '[]
 
   (:~~) :: Layer x
-        => !x
-        -> !(Network xs)
+        => x
+        -> (Network xs)
         -> Network (x ': xs)
 infixr 5 :~~
 
@@ -58,8 +58,8 @@ data INetwork :: [Type] -> [Shape] -> Type where
            => INetwork '[] '[i]
 
     (:~>) :: (SingI i, SingI h, Layer x)
-          => !x
-          -> !(INetwork xs (h ': hs))
+          => x
+          -> (INetwork xs (h ': hs))
           -> INetwork (x ': xs) (i ': h ': hs)
 infixr 5 :~>
 
@@ -93,7 +93,7 @@ type family ComputeOut (layers :: [Type]) (s :: Shape) :: Shape where
 -- to this same parameters.
 type family ComposeOut' (layers :: [Type]) (s :: Shape) :: [Shape] where
     ComposeOut' '[] s      = '[]
-    ComposeOut' (l : ls) s = ((Out l s) ': (ComposeOut' ls (Out l s)))
+    ComposeOut' (l : ls) s = (Out l s) ': (ComposeOut' ls (Out l s))
 
 -- | Same than ComposeOut' but the Shape list includes the initial Shape
 type family ComposeOut (layers :: [Type]) (s :: Shape) :: [Shape] where
@@ -108,8 +108,8 @@ type family ValidateOutput (layers :: [Type]) (sIn :: Shape) (sOut :: Shape) :: 
 -- CREATE INETWORK TYPE INSTANCES FROM LIST OF LAYERS AND INTIAL AND ENDING SHAPES
 --
 
--- | Creates an INetwork type, and by "unconstrained" I mean that I don't check for an
---   expected output
+-- | Creates an INetwork type, and by "unconstrained" it mean that it doesn't check the
+-- expected output
 type family MkINetworkUnconstrained (layers :: [Type]) (s :: Shape) :: Type where
     MkINetworkUnconstrained ls s = INetwork ls (ComposeOut ls s)
 
@@ -321,7 +321,8 @@ instance ( SingI i
 toCNetwork ::
     forall i x xs ss. ( SingI i
                       , Layer x
-                      , ValidNetwork (x ': xs) (i ': ss)) => INetwork (x ': xs) (i ': ss) -> CNetwork
+                      , ValidNetwork (x ': xs) (i ': ss)
+                      ) => INetwork (x ': xs) (i ': ss) -> CNetwork
 toCNetwork n =
     case (sing :: Sing i) of
         D1Sing a     -> CNSequence (toCNetwork' n False (Just $ show [ natVal a]))

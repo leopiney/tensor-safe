@@ -24,10 +24,12 @@ module.exports = {
                   ""
                 );
 
-                templatePath = "./templates/ModelModule.hs";
+                templatePath =
+                  "/Users/leo/Documents/tensor-safe/extra/javascript/eslint-plugin-tensor-safe/templates/ModelModule.hs";
                 templateContent = fs.readFileSync(templatePath, "utf8");
 
-                targetPath = "./target/ModelModule.hs";
+                targetPath =
+                  "/Users/leo/Documents/tensor-safe/extra/javascript/eslint-plugin-tensor-safe/target/ModelModule.hs";
                 targetContent = templateContent.replace(
                   "-- { CONTENT }",
                   content
@@ -40,9 +42,16 @@ module.exports = {
                 // Use tensor-safe to check if the created temp file is valid
                 //
                 try {
+                  console.log("Going to execute command");
+                  console.log(
+                    `stack exec tensor-safe -- check --path ${targetPath}`
+                  );
                   commandContent = cp.execSync(
-                    `tensor-safe check --path ${targetPath}`,
-                    { encoding: "utf8" }
+                    `stack exec tensor-safe -- check --path ${targetPath}`,
+                    {
+                      cwd: "/Users/leo/Documents/tensor-safe/",
+                      encoding: "utf8"
+                    }
                   );
                 } catch (err) {
                   // If the command fails, send a message with the error
@@ -55,7 +64,7 @@ module.exports = {
                   );
                 }
 
-                fs.unlinkSync(targetPath);
+                // fs.unlinkSync(targetPath);
               }
             }
           }

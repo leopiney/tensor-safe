@@ -2,6 +2,7 @@
 module TensorSafe.Layers (
     Add,
     BatchNormalization,
+    Concatenate,
     Conv2D,
     Dense,
     Dropout,
@@ -19,6 +20,7 @@ module TensorSafe.Layers (
 
 import           TensorSafe.Layers.Add
 import           TensorSafe.Layers.BatchNormalization
+import           TensorSafe.Layers.Concatenate
 import           TensorSafe.Layers.Conv2D
 import           TensorSafe.Layers.Dense
 import           TensorSafe.Layers.Dropout

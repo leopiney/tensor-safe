@@ -23,10 +23,12 @@ module.exports = () => {
               ""
             );
 
-            templatePath = "./templates/ModelModule.hs.template";
+            templatePath =
+              "/Users/leo/Documents/tensor-safe/extra/javascript/babel-plugin-tensor-safe/templates/ModelModule.hs.template";
             templateContent = fs.readFileSync(templatePath, "utf8");
 
-            targetPath = "./target/ModelModule.hs";
+            targetPath =
+              "/Users/leo/Documents/tensor-safe/extra/javascript/babel-plugin-tensor-safe/target/ModelModule.hs";
             targetContent = templateContent.replace("-- { CONTENT }", content);
 
             moduleName = "ModelModule";
@@ -39,9 +41,13 @@ module.exports = () => {
             // to rewrite the `safeModel` expression.
             //
             try {
+              console.log("Going to execute command");
+              console.log(
+                `stack exec tensor-safe -- compile --path ${targetPath} --module-name ${moduleName} --javascript`
+              );
               commandContent = cp.execSync(
-                `tensor-safe compile --path ${targetPath} --module-name ${moduleName} --javascript`,
-                { encoding: "utf8" }
+                `stack exec tensor-safe -- compile --path ${targetPath} --module-name ${moduleName} --javascript`,
+                { cwd: "/Users/leo/Documents/tensor-safe/", encoding: "utf8" }
               );
 
               var parsed = babel.parseSync(commandContent, {

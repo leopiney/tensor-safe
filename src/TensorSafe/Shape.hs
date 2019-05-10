@@ -29,11 +29,11 @@ import           TensorSafe.Core
 --   These are only used with DataKinds, as Kind `Shape`, with Types 'D1, 'D2, 'D3.
 data Shape
     = D1 Nat
-    -- ^ One dimensional vector
+    -- One dimensional vector
     | D2 Nat Nat
-    -- ^ Two dimensional matrix. Row, Column.
+    -- Two dimensional matrix. Row, Column.
     | D3 Nat Nat Nat
-    -- ^ Three dimensional matrix. Row, Column, Channels.
+    -- Three dimensional matrix. Row, Column, Channels.
 
 -- | Concrete data structures for a Shape.
 --

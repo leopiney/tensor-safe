@@ -24,6 +24,7 @@ import           Text.Casing    (camel, quietSnake)
 data DLayer = DActivation
             | DAdd
             | DBatchNormalization
+            | DConcatenate
             | DConv2D
             | DDense
             | DDropout
@@ -38,7 +39,8 @@ data DLayer = DActivation
             deriving Show
 
 -- | Defines the
-data CNetwork = CNSequence CNetwork
+data CNetwork =
+    CNSequence CNetwork
               | CNAdd CNetwork CNetwork
               | CNCons CNetwork CNetwork
               | CNLayer DLayer (Map String String)
@@ -61,6 +63,7 @@ instance LayerGenerator JavaScript where
     generateName _ DActivation         = "activation"
     generateName _ DAdd                = "addStrict"
     generateName _ DBatchNormalization = "batchNormalization"
+    generateName _ DConcatenate        = "concatenate"
     generateName _ DConv2D             = "conv2d"
     generateName _ DDense              = "dense"
     generateName _ DDropout            = "dropout"
@@ -77,6 +80,7 @@ instance LayerGenerator Python where
     generateName _ DActivation         = "Activation"
     generateName _ DAdd                = "add"
     generateName _ DBatchNormalization = "BatchNormalization"
+    generateName _ DConcatenate        = "Concatenate"
     generateName _ DConv2D             = "Conv2D"
     generateName _ DDense              = "Dense"
     generateName _ DDropout            = "Dropout"
