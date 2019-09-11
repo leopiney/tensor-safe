@@ -6,8 +6,8 @@
 
 # Tensor Safe
 
-`tensor-safe` is a dependently typed framework to define deep learning models which structure is verified on
-compilation time. If the models are valid, these can be compiled to Keras framework in Python or JavaScript.
+`tensor-safe` is a dependently typed framework to define deep learning models whose structure is verified at
+compilation time. If the models are valid, these can be compiled to external frameworks, such as Keras framework in Python or JavaScript.
 
 ## Install instructions
 
@@ -168,12 +168,7 @@ function createConvModel() {
 
 ## Related projects
 
-This project was highly influenciated by [Grenade](https://github.com/HuwCampbell/grenade) 💣.
-Grenade is a really cool library to define deep neural networks which are validated using dependent types.
-What differences TensorSafe from Grenade the most is that TensorSafe doesn't run nor train the models, instead
-it compiles the model to external languages that are capable of performing all computations – like Keras
-for Python or JavaScript. Also, TensorSafe doesn't need to specifically declare all Shapes transformations
-for all the model layers, instead, it just needs the `input` and `output` Shapes to validate the model.
+This project was highly influenced by [Grenade](https://github.com/HuwCampbell/grenade) 💣. Grenade is a cool library to define deep neural networks which are validated using dependent types. What differences TensorSafe from Grenade the most is that TensorSafe doesn't run nor train the models, instead, it compiles the model to external languages that are capable of performing all computations – like Keras for Python or JavaScript. Also, TensorSafe doesn't need to specifically declare all Shapes transformations for all the model layers, instead, it just needs the input and output Shapes to validate the model.
 
 Another worth looking library is [TensorFlow for Haskell](https://github.com/tensorflow/haskell).
 This library has all bindings for TensorFlow in C. The issue with this is that it doesn't perform
