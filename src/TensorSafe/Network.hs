@@ -187,7 +187,7 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
     --
     --
     --
-    Out (Dense i o) ('D1 i) = 'D1 o
+    Out (Dense o) ('D1 _) = 'D1 o
 
     --
     --

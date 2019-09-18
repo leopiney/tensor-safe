@@ -15,17 +15,18 @@ import           TensorSafe.Layer
 
 
 -- | A classic Dense, or FullyConnected, layer with input and output parameters.
-data Dense :: Nat -> Nat -> Type where
-    Dense :: Dense input output
+data Dense :: Nat -> Type where
+    Dense :: Dense output
     deriving Show
 
-instance (KnownNat input, KnownNat output) => Layer (Dense input output) where
+instance (KnownNat output) => Layer (Dense output) where
     layer = Dense
-    compile _ _ =
-        let input = show $ natVal (Proxy :: Proxy input)
+    compile _ inputShape =
+        let params = case inputShape of
+                Just shape -> fromList [("inputShape", shape)]
+                Nothing    -> empty
             output = show $ natVal (Proxy :: Proxy output)
         in
-            CNLayer DDense (fromList [
-              ("inputDim", input),
-              ("units", output)
-            ])
+            CNLayer DDense (union params (fromList [
+                ("units", output)
+            ]))
