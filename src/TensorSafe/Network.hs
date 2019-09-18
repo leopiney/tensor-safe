@@ -250,6 +250,11 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
     --
     --
     --
+    Out Softmax ('D1 i) = 'D1 i
+
+    --
+    --
+    --
     Out (UpSampling rows columns) ('D2 inputRows inputColumns) =
         ('D2 (inputRows N.* rows) (inputColumns N.* columns))
 

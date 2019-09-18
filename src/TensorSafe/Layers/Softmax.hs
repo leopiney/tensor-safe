@@ -11,4 +11,4 @@ data Softmax = Softmax deriving Show
 
 instance Layer Softmax where
     layer = Softmax
-    compile _ _ = CNLayer DActivation (fromList [("activation", "\"softmax\"")])
+    compile _ _ = CNLayer DSoftmax empty
