@@ -57,7 +57,14 @@ data INetwork :: [Type] -> [Shape] -> Type where
     INNil  :: SingI i
            => INetwork '[] '[i]
 
-    (:~>) :: (SingI i, SingI h, Layer x)
+    (:~>) :: ( SingI i
+             , SingI h
+             , Layer x
+             , (Out x i) ~ o -- IMPORTANT: validation that the output and the computation of the
+                             -- layer will match. Without this constraint we could be able to
+                             -- create an instance of ValidNetwork that doesn't satisfies the type
+                             -- constraints of MkINetwork for example.
+             )
           => x
           -> (INetwork xs (h ': hs))
           -> INetwork (x ': xs) (i ': h ': hs)
@@ -309,10 +316,6 @@ instance ( SingI i
          , SingI o
          , Layer x
          , ValidNetwork xs (o ': rs)
-         , (Out x i) ~ o -- IMPORTANT: validation that the output and the computation of the layer
-                         -- will match. Without this constraint we could be able to create an
-                         -- instance of ValidNetwork that doesn't satisfies the type constraints
-                         -- of MkINetwork for example.
       ) => ValidNetwork (x ': xs) (i ': o ': rs) where
     mkINetwork = layer :~> mkINetwork
 
