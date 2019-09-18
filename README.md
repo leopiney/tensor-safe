@@ -50,9 +50,9 @@ Here's an example of how to define a simple model for the `MNIST` dataset, using
 type MNIST = MkINetwork
     '[
         Flatten,
-        Dense 784 42,
+        Dense 42,
         Relu,
-        Dense 42 10,
+        Dense 10,
         Sigmoid
     ]
     ('D3 28 28 1)    -- Input
@@ -72,10 +72,10 @@ You can nest networks definitions easily by adding the networks as layers. For e
 
 ```haskell
 type DenseRelu i o =
-    MkINetwork '[ Dense i o, Relu ] ('D1 i) ('D1 o)
+    MkINetwork '[ Dense o, Relu ] ('D1 i) ('D1 o)
 
 type DenseSigmoid i o =
-    MkINetwork '[ Dense i o, Sigmoid ] ('D1 i) ('D1 o)
+    MkINetwork '[ Dense o, Sigmoid ] ('D1 i) ('D1 o)
 
 type MNIST = MkINetwork
     '[
@@ -153,10 +153,10 @@ function createConvModel() {
         Conv2D 32 32 3 3 1 1,
         Relu,
         Flatten,
-        Dense 288 64,
+        Dense 64,
         Sigmoid,
-        Dense 64 10,
-        Sigmoid
+        Dense 10,
+        Softmax
     ]
     ('D3 28 28 1)  -- Input
     ('D1 10)       -- Output

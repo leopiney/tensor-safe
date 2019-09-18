@@ -10,9 +10,9 @@ function createConvModel() {
           Conv2D 32 32 3 3 1 1,
           Relu,
           Flatten,
-          Dense 288 64,
+          Dense 64,
           Sigmoid,
-          Dense 64 10,
+          Dense 10,
           Sigmoid
       ]
       ('D3 28 28 1)    -- Input

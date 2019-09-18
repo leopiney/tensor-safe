@@ -77,8 +77,7 @@ type ResNet50 img_size channels =
     --  , Add (IdentityBlock 2048 3 512 512 2048) '[Input] , Relu
 
      , GlobalAvgPooling2D
-    --  , Dense 2048 1000
-     , Dense 256 1000
+     , Dense 1000
     ]
     ('D3 img_size img_size channels)    -- Input
     ('D1 1000)                            -- Output

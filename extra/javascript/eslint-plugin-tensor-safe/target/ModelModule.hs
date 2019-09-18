@@ -18,9 +18,9 @@ type NN = MkINetwork
     
     '[
         Flatten,
-        Dense 784 42,
+        Dense 42,
         Relu,
-        Dense 42 10,
+        Dense 10,
         Sigmoid
     ]
     ('D3 28 28 1)  -- Input

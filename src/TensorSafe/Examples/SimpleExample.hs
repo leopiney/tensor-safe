@@ -19,7 +19,7 @@ type MyNet = MkINetwork '[ Sigmoid, Flatten, Relu, Flatten ] ('D2 28 28) ('D1 78
 myNet :: MyNet
 myNet = mkINetwork
 
-type MyNet2 = MkINetwork '[ Sigmoid, Flatten, Dense 784 80, Relu, Flatten ] ('D2 28 28) ('D1 80)
+type MyNet2 = MkINetwork '[ Sigmoid, Flatten, Dense 80, Relu, Flatten ] ('D2 28 28) ('D1 80)
 
 -- | Simple network example
 myNet2 :: MyNet2
@@ -30,7 +30,7 @@ myNet3 :: MkINetwork
     '[
         MaxPooling 2 2 2 2,
         Flatten,
-        Dense 196 10,
+        Dense 10,
         Sigmoid,
         Relu
     ]

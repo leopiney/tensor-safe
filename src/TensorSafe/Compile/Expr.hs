@@ -121,6 +121,7 @@ instance Generator JavaScript where
                     (generateName l layer)
                     (paramsToJS params)
                 ]
+            generateJS _ = [""]
 
     generateFile l cn =
         startCode `append` (generate l cn) `append` endCode
@@ -164,6 +165,7 @@ instance Generator Python where
                     ("model.add(tf.layers." % string % "(" % string % "))")
                     (generateName l layer)
                     (paramsToPython params)]
+            generatePy _ = [""]
 
     generateFile l cn =
         startCode `append` (generate l cn)
