@@ -7,7 +7,6 @@ module TensorSafe.Layers.Concatenate (Concatenate) where
 import           Data.Kind               (Type)
 import           Data.Map
 
-import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
 -- | Concatenates the dimensions of the shapes to a list of values with shape D1

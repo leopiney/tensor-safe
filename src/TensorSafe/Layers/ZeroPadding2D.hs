@@ -10,7 +10,6 @@ import           Data.Map
 import           Data.Proxy
 import           GHC.TypeLits
 
-import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
 -- | A ZeroPadding2D layer with padding_rows and padding_cols arguments

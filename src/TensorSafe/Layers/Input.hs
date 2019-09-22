@@ -3,7 +3,6 @@ module TensorSafe.Layers.Input (Input) where
 
 import           Data.Map
 
-import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
 -- | Inputs the dimensions of the shapes to a list of values with shape D1

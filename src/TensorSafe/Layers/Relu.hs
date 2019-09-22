@@ -3,7 +3,6 @@ module TensorSafe.Layers.Relu (Relu) where
 
 import           Data.Map
 
-import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
 -- | A ReLu activation function

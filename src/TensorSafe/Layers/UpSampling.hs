@@ -10,7 +10,6 @@ import           Data.Map
 import           Data.Proxy
 import           GHC.TypeLits
 
-import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
 -- | A 2D UpSampling pooling that works for D2 and D3 shapes

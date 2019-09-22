@@ -7,8 +7,7 @@
 module TensorSafe.Examples.UNetExample where
 
 import           TensorSafe.Layers
--- import           TensorSafe.Network (MkINetwork, mkINetwork)
-import           TensorSafe.Network
+import           TensorSafe.Network (MkINetwork, mkINetwork)
 import           TensorSafe.Shape
 
 
@@ -46,20 +45,21 @@ type UNet img_size channels =
      , Relu
 
      , MaxPooling 2 2 2 2
-    --
-    --
-    --
+    -- --
+    -- --
+    -- --
      , Conv2D 128 256 3 3 1 1
      , Relu
 
      , Conv2D 256 256 3 3 1 1
+     , ZeroPadding2D 1 1
      , Relu
 
      , MaxPooling 2 2 2 2
-    --
-    --
-    --
-    , Conv2D 256 512 3 3 1 1
+    -- --
+    -- --
+    -- --
+     , Conv2D 256 512 3 3 1 1
      , Relu
 
      , Conv2D 512 512 3 3 1 1
@@ -67,23 +67,25 @@ type UNet img_size channels =
      , Relu
 
      , MaxPooling 2 2 2 2
-    --
-    --
-    --
-    , Conv2D 512 1024 3 3 1 1
+    -- --
+    -- --
+    -- --
+     , Conv2D 512 1024 3 3 1 1
      , Relu
      , Conv2D 1024 1024 3 3 1 1
      , Relu
-    --
-    --
-    --
-    -- , UpSampling 2 2
-    -- , Conv2D 1024 512 2 2 1 1
+    -- --
+    -- --
+    -- --
+    , UpSampling 2 2
+    , Conv2D 1024 512 3 3 1 1
+    , ZeroPadding2D 1 1
 
     ]
     ('D3 img_size img_size channels)    -- Input
     ('D1 1024)                            -- Output
 
--- unet :: UNet 200 3
+-- TODO: WIP
+-- unet :: UNet 224 3
 -- unet = mkINetwork
 

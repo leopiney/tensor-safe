@@ -13,23 +13,20 @@
 -- all needed information for compiling the Network structures to CNetworks for later code
 -- generation.
 -}
--- module TensorSafe.Network (
---     Network (..),
---     INetwork (..),
---     MkINetwork,
---     ValidNetwork,
---     mkINetwork,
---     toCNetwork
--- ) where
-module TensorSafe.Network where
+module TensorSafe.Network (
+    Network (..),
+    INetwork (..),
+    MkINetwork,
+    ValidNetwork,
+    mkINetwork,
+) where
 
 import           Data.Kind               (Type)
 import           Data.Singletons
 import           GHC.TypeLits            as N
 import           GHC.TypeLits.Extra      (Div)
 
-import           TensorSafe.Compile.Expr
-import           TensorSafe.Layer        (Layer, compile, layer)
+import           TensorSafe.Layer        (Layer, layer)
 import           TensorSafe.Layers
 import           TensorSafe.Shape
 
@@ -75,11 +72,6 @@ instance Show (INetwork '[] '[i]) where
 
 instance (Show x, Show (INetwork xs rs)) => Show (INetwork (x ': xs) (i ': rs)) where
     show (x :~> xs) = show x ++ "\n :~> " ++ show xs
-
--- | This instance of INetwork as a Layer makes possible nesting INetworks
-instance ValidNetwork ls ss => Layer (INetwork ls ss) where
-    layer = mkINetwork
-    compile n i = toCNetwork' n True i
 
 --
 -- COMPUTING RESULTING SHAPES FROM A LIST OF LAYERS.
@@ -136,9 +128,10 @@ type family MkINetwork (layers :: [Type]) (sIn :: Shape) (sOut :: Shape) :: Type
 -- MAPPING TRANSFORMATIONS OF LAYERS AND SHAPES
 --
 
-type family MaybeShape (s :: Shape) (b :: Bool) :: Shape where
-    MaybeType s 'False = 'D1 0 -- HACK: ShapeEquals' should raise an exception on this case
-    MaybeType s 'True  = s
+-- TODO: Work in progress for `Out Add l1 l2` definition
+-- type family MaybeShape (s :: Shape) (b :: Bool) :: Shape where
+--     MaybeType s 'False = 'D1 0 -- HACK: ShapeEquals' should raise an exception on this case
+--     MaybeType s 'True  = s
 
 
 type family Add' (layers :: [Type]) (layers2 :: [Type]) (shape :: Shape) where
@@ -318,36 +311,3 @@ instance ( SingI i
          , ValidNetwork xs (o ': rs)
       ) => ValidNetwork (x ': xs) (i ': o ': rs) where
     mkINetwork = layer :~> mkINetwork
-
---
--- INETWORK MAPPING TO CNETWORK
---
-
--- | Compilation: Gets the initial shape using Singleton instances. Since this is the function we
---   run for transforming an INetwork to CNetwork, the nested argument of `toCNetwork'` is set
---   to False.
-toCNetwork ::
-    forall i x xs ss. ( SingI i
-                      , Layer x
-                      , ValidNetwork (x ': xs) (i ': ss)
-                      ) => INetwork (x ': xs) (i ': ss) -> CNetwork
-toCNetwork n =
-    case (sing :: Sing i) of
-        D1Sing a     -> CNSequence (toCNetwork' n False (Just $ show [ natVal a]))
-
-        D2Sing a b   -> CNSequence (toCNetwork' n False (Just $ show [ natVal a
-                                                                     , natVal b]))
-
-        D3Sing a b c -> CNSequence (toCNetwork' n False (Just $ show [ natVal a
-                                                                     , natVal b
-                                                                     , natVal c]))
--- | Helper function for `toCNetwork`
-toCNetwork' :: INetwork xs ss -> Bool -> Maybe String -> CNetwork
-toCNetwork' INNil nested _ =
-    if nested
-        then CNNil
-        else CNReturn
-toCNetwork' (l :~> n) nested inputShape =
-    let compilatedLayer = compile l inputShape
-        compilatedNetwork = toCNetwork' n nested Nothing
-    in CNCons compilatedLayer compilatedNetwork

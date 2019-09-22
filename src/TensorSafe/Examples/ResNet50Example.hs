@@ -7,8 +7,7 @@
 module TensorSafe.Examples.ResNet50Example where
 
 import           TensorSafe.Layers
--- import           TensorSafe.Network (MkINetwork, mkINetwork)
-import           TensorSafe.Network
+import           TensorSafe.Network (MkINetwork, mkINetwork)
 import           TensorSafe.Shape
 
 

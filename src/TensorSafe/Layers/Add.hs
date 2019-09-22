@@ -7,7 +7,6 @@ module TensorSafe.Layers.Add (Add) where
 import           Data.Kind               (Type)
 import           Data.Map
 
-import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
 -- | Adds the dimensions of the shapes to a list of values with shape D1

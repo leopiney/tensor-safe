@@ -8,10 +8,8 @@ module TensorSafe (
     generateFile,
     INetwork,
     MkINetwork,
-    mkINetwork,
-    toCNetwork
+    mkINetwork
 ) where
 
 import           TensorSafe.Compile.Expr
-import           TensorSafe.Network      (INetwork, MkINetwork, mkINetwork,
-                                          toCNetwork)
+import           TensorSafe.Network      (INetwork, MkINetwork, mkINetwork)

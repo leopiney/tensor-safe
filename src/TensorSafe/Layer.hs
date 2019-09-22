@@ -3,12 +3,44 @@ module TensorSafe.Layer (
     InputShape,
     Layer,
     compile,
-    layer
+    layer,
+    DLayer (..),
+    CNetwork (..)
 ) where
 
+import           Data.Map
 import           Data.Maybe              ()
 
-import           TensorSafe.Compile.Expr
+-- | Auxiliary data representation of Layers
+-- IMPORTANT: If you add new Layers definitions to `TensorSafe.Layers`, you should add
+-- the corresponding data structure here for the same layer.
+data DLayer = DActivation
+            | DAdd
+            | DBatchNormalization
+            | DConcatenate
+            | DConv2D
+            | DDense
+            | DDropout
+            | DFlatten
+            | DGlobalAvgPooling2D
+            | DInput
+            | DLSTM
+            | DMaxPooling
+            | DRelu
+            | DSoftmax
+            | DUpSampling
+            | DZeroPadding2D
+            deriving Show
+
+-- | Defines the skeleton of a INetwork
+data CNetwork =
+    CNSequence CNetwork
+              | CNAdd CNetwork CNetwork
+              | CNCons CNetwork CNetwork
+              | CNLayer DLayer (Map String String)
+              | CNReturn  -- End of initial sequence network
+              | CNNil     -- End of possible nested sequence networks
+              deriving Show
 
 -- | Auxiliary type for Input Shape parameter
 type InputShape = Maybe String

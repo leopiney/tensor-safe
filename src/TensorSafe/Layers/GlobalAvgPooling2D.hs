@@ -3,7 +3,6 @@ module TensorSafe.Layers.GlobalAvgPooling2D (GlobalAvgPooling2D) where
 
 import           Data.Map
 
-import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
 -- | A GlobalAvgPooling2D function

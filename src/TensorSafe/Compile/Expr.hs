@@ -1,4 +1,9 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE TypeFamilies          #-}
+{-# LANGUAGE TypeOperators         #-}
 {-| This module describes the expression structure of a INetwork instance.
 -- The INetwork can be structured into a Data structure called CNetwork, with which later
 -- to compilation external languages can be done.
@@ -10,44 +15,62 @@ module TensorSafe.Compile.Expr (
     Python (..),
     Generator,
     generate,
-    generateFile
+    generateFile,
+    toCNetwork
 ) where
 
 import           Data.Map
+import           Data.Singletons
 import           Data.Text.Lazy as T
 import           Formatting
 import           Text.Casing    (camel, quietSnake)
+import           GHC.TypeLits
 
--- | Auxiliary data representation of Layers
--- IMPORTANT: If you add new Layers definitions to `TensorSafe.Layers`, you should add
--- the corresponding data structure here for the same layer.
-data DLayer = DActivation
-            | DAdd
-            | DBatchNormalization
-            | DConcatenate
-            | DConv2D
-            | DDense
-            | DDropout
-            | DFlatten
-            | DGlobalAvgPooling2D
-            | DInput
-            | DLSTM
-            | DMaxPooling
-            | DRelu
-            | DSoftmax
-            | DUpSampling
-            | DZeroPadding2D
-            deriving Show
 
--- | Defines the
-data CNetwork =
-    CNSequence CNetwork
-              | CNAdd CNetwork CNetwork
-              | CNCons CNetwork CNetwork
-              | CNLayer DLayer (Map String String)
-              | CNReturn  -- End of initial sequence network
-              | CNNil     -- End of possible nested sequence networks
-              deriving Show
+import           TensorSafe.Layer
+import           TensorSafe.Network
+import           TensorSafe.Shape
+
+
+-- | This instance of INetwork as a Layer makes possible nesting INetworks
+instance ValidNetwork ls ss => Layer (INetwork ls ss) where
+    layer = mkINetwork
+    compile n i = toCNetwork' n True i
+
+--
+-- INETWORK MAPPING TO CNETWORK
+--
+
+-- | Compilation: Gets the initial shape using Singleton instances. Since this is the function we
+--   run for transforming an INetwork to CNetwork, the nested argument of `toCNetwork'` is set
+--   to False.
+toCNetwork ::
+    forall i x xs ss. ( SingI i
+                      , Layer x
+                      , ValidNetwork (x ': xs) (i ': ss)
+                      ) => INetwork (x ': xs) (i ': ss) -> CNetwork
+toCNetwork n =
+    case (sing :: Sing i) of
+        D1Sing a     -> CNSequence (toCNetwork' n False (Just $ show [ natVal a]))
+
+        D2Sing a b   -> CNSequence (toCNetwork' n False (Just $ show [ natVal a
+                                                                     , natVal b]))
+
+        D3Sing a b c -> CNSequence (toCNetwork' n False (Just $ show [ natVal a
+                                                                     , natVal b
+                                                                     , natVal c]))
+-- | Helper function for `toCNetwork`
+toCNetwork' :: INetwork xs ss -> Bool -> Maybe String -> CNetwork
+toCNetwork' INNil nested _ =
+    if nested
+        then CNNil
+        else CNReturn
+toCNetwork' (l :~> n) nested inputShape =
+    let compilatedLayer = compile l inputShape
+        compilatedNetwork = toCNetwork' n nested Nothing
+    in CNCons compilatedLayer compilatedNetwork
+
+
 
 -- | Support for JavaScript compilation
 data JavaScript = JavaScript deriving Show
@@ -100,15 +123,21 @@ instance LayerGenerator Python where
 class Generator l where
 
     -- | Adds supports for a language. Generates a CNetwork to Text
-    generate :: l -> CNetwork -> Text
+    generate :: forall i x xs ss. ( SingI i
+                                   , Layer x
+                                   , ValidNetwork (x ': xs) (i ': ss)
+                                   ) => l -> INetwork (x ': xs) (i ': ss) -> Text
 
     -- | Similar to 'generate', but also adds necessary header and module lines of text so as to
     -- have the CNetwork compiled at a separate file.
-    generateFile :: l -> CNetwork -> Text
+    generateFile :: forall i x xs ss. ( SingI i
+                                      , Layer x
+                                      , ValidNetwork (x ': xs) (i ': ss)
+                                      ) => l -> INetwork (x ': xs) (i ': ss) -> Text
 
 instance Generator JavaScript where
     generate l =
-        T.intercalate "\n" . generateJS
+        T.intercalate "\n" . generateJS . toCNetwork
         where
             generateJS :: CNetwork -> [Text]
             generateJS (CNSequence cn)  = ["var model = tf.sequential();"] ++ generateJS cn
@@ -123,8 +152,8 @@ instance Generator JavaScript where
                 ]
             generateJS _ = [""]
 
-    generateFile l cn =
-        startCode `append` (generate l cn) `append` endCode
+    generateFile l net =
+        startCode `append` (generate l net) `append` endCode
         where
             startCode :: Text
             startCode = T.intercalate "\n"
@@ -153,7 +182,7 @@ paramsToJS m =
 
 instance Generator Python where
     generate l =
-        T.intercalate "\n" . generatePy
+        T.intercalate "\n" . generatePy . toCNetwork
         where
             generatePy :: CNetwork -> [Text]
             generatePy (CNSequence cn)  = ["model = tf.keras.models.Sequential()"] ++ generatePy cn

@@ -3,7 +3,6 @@ module TensorSafe.Layers.Sigmoid (Sigmoid) where
 
 import           Data.Map
 
-import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
 -- | A Sigmoid activation function

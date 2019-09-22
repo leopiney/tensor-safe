@@ -3,7 +3,6 @@ module TensorSafe.Layers.Flatten (Flatten) where
 
 import           Data.Map
 
-import           TensorSafe.Compile.Expr
 import           TensorSafe.Layer
 
 -- | Flattens the dimensions of the shapes to a list of values with shape D1
