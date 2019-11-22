@@ -241,6 +241,11 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
     --
     --
     Out Sigmoid s = s
+    
+    --
+    --
+    --
+    Out Softmax s = s
 
     --
     --
