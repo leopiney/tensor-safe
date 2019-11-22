@@ -8,6 +8,7 @@ module TensorSafe.Examples.Examples (
 ) where
 
 import           Data.Text.Lazy                    (unpack)
+import           Data.Typeable (typeOf)
 
 import           TensorSafe.Compile.Expr           (JavaScript (..),
                                                     Python (..), generate,
@@ -57,6 +58,7 @@ mnistExampleDense =
         putStrLn $ "MNIST Dense example"
         putStrLn $ "-------------"
         putStrLn $ show mnistDense
+        putStrLn $ show (typeOf mnistDense)
         putStrLn $ "\n"
         putStrLn $ "MNIST compilation"
         putStrLn $ "-------------"

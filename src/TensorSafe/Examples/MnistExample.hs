@@ -49,3 +49,5 @@ type MNISTDense = MkINetwork
 -- | MNIST implementation using just Dense layers
 mnistDense :: MNISTDense
 mnistDense = mkINetwork
+
+

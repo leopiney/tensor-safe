@@ -1,4 +1,8 @@
 {-| This module defines the Layer class from which all Layers should have instances of. -}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE TypeFamilies          #-}
+{-# LANGUAGE TypeOperators         #-}
+{-# LANGUAGE UndecidableInstances         #-}
 module TensorSafe.Layer (
     InputShape,
     Layer,
