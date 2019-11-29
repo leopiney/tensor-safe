@@ -57,7 +57,6 @@ data INetwork :: [Type] -> [Shape] -> Type where
     (:~>) :: ( SingI i
              , SingI h
              , Layer x
-             , (Out x i) ~ h
              )
           => x
           -> (INetwork xs (h ': ss))
@@ -246,6 +245,7 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
 
     --
     --
+
     --
     Out Softmax ('D1 i) = 'D1 i
 

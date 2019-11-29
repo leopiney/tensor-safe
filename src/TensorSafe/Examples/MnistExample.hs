@@ -41,7 +41,7 @@ type MNISTDense = MkINetwork
         Dense 42,
         Relu,
         Dense 10,
-        Sigmoid
+        Softmax
     ]
     ('D3 28 28 1)  -- Input
     ('D1 10)       -- Output

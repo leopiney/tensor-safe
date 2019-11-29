@@ -27,9 +27,9 @@ type AlexNet = MkINetwork
         MaxPooling 3 3 2 2, Relu,
         -- 
         Flatten,
-        Dense 9216 4096, Relu,
-        Dense 4096 4096, Relu,
-        Dense 4096 1000, Relu,
+        Dense 4096, Relu,
+        Dense 4096, Relu,
+        Dense 1000, Relu,
         Softmax
     ]
     ('D3 227 227 3)    -- Input
