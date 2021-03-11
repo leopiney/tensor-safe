@@ -1,66 +1,70 @@
-{-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-| This module wraps all examples in simple fuctions. -}
-module TensorSafe.Examples.Examples (
-    mnistExample,
+
+-- | This module wraps all examples in simple fuctions.
+module TensorSafe.Examples.Examples
+  ( mnistExample,
     mnistExampleDense,
-    simpleExample
-) where
+    simpleExample,
+  )
+where
 
-import           Data.Text.Lazy                    (unpack)
-
-import           TensorSafe.Compile.Expr           (JavaScript (..), generate)
-import           TensorSafe.Examples.MnistExample
-import           TensorSafe.Examples.SimpleExample
-import           TensorSafe.Network                (toCNetwork)
-
+import Data.Text.Lazy (unpack)
+import TensorSafe.Compile.Expr (JavaScript (..), generate)
+import TensorSafe.Examples.MnistExample (mnist, mnistDense)
+import TensorSafe.Examples.SimpleExample
+  ( lstm,
+    myNet,
+    myNet2,
+    myNet3,
+  )
+import TensorSafe.Network (toCNetwork)
 
 -- | Puts simple examples results to stdout
 simpleExample :: IO ()
 simpleExample =
-    do
-        putStrLn $ "Simple network example"
-        putStrLn $ "----------------------"
-        putStrLn $ show myNet
-        putStrLn $ "Simple network example"
-        putStrLn $ "----------------------"
-        putStrLn $ show myNet2
-        putStrLn $ "Simple network example"
-        putStrLn $ "----------------------"
-        putStrLn $ show myNet3
-        putStrLn $ "Simple LSTM network example"
-        putStrLn $ "----------------------"
-        putStrLn $ show lstm
+  do
+    putStrLn "Simple network example"
+    putStrLn "----------------------"
+    print myNet
+    putStrLn "Simple network example"
+    putStrLn "----------------------"
+    print myNet2
+    putStrLn "Simple network example"
+    putStrLn "----------------------"
+    print myNet3
+    putStrLn "Simple LSTM network example"
+    putStrLn "----------------------"
+    print lstm
 
 -- | Puts MNIST examples results to stdout
 mnistExample :: IO ()
 mnistExample =
-    do
-        putStrLn $ "MNIST example"
-        putStrLn $ "-------------"
-        putStrLn $ show mnist
-        putStrLn $ "\n"
-        putStrLn $ "MNIST compilation"
-        putStrLn $ "-------------"
-        putStrLn $ show (toCNetwork mnist)
-        putStrLn $ "\n"
-        putStrLn $ "MNIST generation"
-        putStrLn $ "-------------"
-        putStrLn $ unpack $ generate JavaScript (toCNetwork mnist)
+  do
+    putStrLn "MNIST example"
+    putStrLn "-------------"
+    print mnist
+    putStrLn "\n"
+    putStrLn "MNIST compilation"
+    putStrLn "-------------"
+    print (toCNetwork mnist)
+    putStrLn "\n"
+    putStrLn "MNIST generation"
+    putStrLn "-------------"
+    putStrLn $ unpack $ generate JavaScript (toCNetwork mnist)
 
 -- | Puts MNIST Dense examples results to stdout
 mnistExampleDense :: IO ()
 mnistExampleDense =
-    do
-        putStrLn $ "MNIST Dense example"
-        putStrLn $ "-------------"
-        putStrLn $ show mnistDense
-        putStrLn $ "\n"
-        putStrLn $ "MNIST compilation"
-        putStrLn $ "-------------"
-        putStrLn $ show (toCNetwork mnistDense)
-        putStrLn $ "\n"
-        putStrLn $ "MNIST generation"
-        putStrLn $ "-------------"
-        putStrLn $ unpack $ generate JavaScript (toCNetwork mnistDense)
-
+  do
+    putStrLn "MNIST Dense example"
+    putStrLn "-------------"
+    print mnistDense
+    putStrLn "\n"
+    putStrLn "MNIST compilation"
+    putStrLn "-------------"
+    print (toCNetwork mnistDense)
+    putStrLn "\n"
+    putStrLn "MNIST generation"
+    putStrLn "-------------"
+    putStrLn $ unpack $ generate JavaScript (toCNetwork mnistDense)
