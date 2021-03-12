@@ -7,8 +7,7 @@
 module TensorSafe.Examples.ResNet50Example where
 
 import TensorSafe.Layers
-  ( Add,
-    BatchNormalization,
+  ( BatchNormalization,
     Conv2D,
     Dense,
     GlobalAvgPooling2D,
@@ -60,12 +59,12 @@ type ResNet50 img_size channels =
        ZeroPadding2D 1 1,
        MaxPooling 3 3 2 2,
        -- First block
-       Add (ConvBlock 64 3 1 64 64 256) (Shortcut 64 1 256),
-       Relu,
-       Add (IdentityBlock 256 3 64 64 256) '[Input],
-       Relu,
-       Add (IdentityBlock 256 3 64 64 256) '[Input],
-       Relu,
+       --  Add (ConvBlock 64 3 1 64 64 256) (Shortcut 64 1 256),
+       --  Relu,
+       --  Add (IdentityBlock 256 3 64 64 256) '[Input],
+       --  Relu,
+       --  Add (IdentityBlock 256 3 64 64 256) '[Input],
+       --  Relu,
        -- Second block
        --  , Add (ConvBlock 256 3 1 128 128 512) (Shortcut 256 1 512) , Relu
        --  , Add (IdentityBlock 512 3 128 128 512) '[Input] , Relu
@@ -92,5 +91,5 @@ type ResNet50 img_size channels =
     ('D3 img_size img_size channels) -- Input
     ('D1 1000) -- Output
 
-resnet50 :: ResNet50 224 1
-resnet50 = mkINetwork
+-- resnet50 :: ResNet50 224 1
+-- resnet50 = mkINetwork

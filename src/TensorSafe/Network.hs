@@ -3,20 +3,12 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -fplugin GHC.TypeLits.Extra.Solver #-}
-
--- module TensorSafe.Network (
---     Network (..),
---     INetwork (..),
---     MkINetwork,
---     ValidNetwork,
---     mkINetwork,
---     toCNetwork
--- ) where
 
 -- | This module is the core of TensorSafe. It defines all Network data structures
 -- -- and types functions that respresent Layers modifications of shapes, as well as
@@ -29,13 +21,11 @@ import Data.Singletons (Sing, SingI (..))
 import GHC.TypeLits as N
 import GHC.TypeLits.Extra (Div)
 import TensorSafe.Compile.Expr
-  ( CNetwork (CNCons, CNNil, CNReturn, CNSequence),
+  ( CNetwork (CNConcatenate, CNCons, CNNil, CNReturn, CNSequence),
   )
 import TensorSafe.Layer (Layer, compile, layer)
 import TensorSafe.Layers
-  ( Add,
-    BatchNormalization,
-    Concatenate,
+  ( BatchNormalization,
     Conv2D,
     Dense,
     Dropout,
@@ -94,10 +84,24 @@ instance Show (INetwork '[] '[i]) where
 instance (Show x, Show (INetwork xs rs)) => Show (INetwork (x ': xs) (i ': rs)) where
   show (x :~> xs) = show x ++ "\n :~> " ++ show xs
 
+--
+-- Extra declaration of Layer instances
+--
+
 -- | This instance of INetwork as a Layer makes possible nesting INetworks
 instance ValidNetwork ls ss => Layer (INetwork ls ss) where
   layer = mkINetwork
   compile n i = toCNetwork' n True i
+
+-- | Concatenate layer
+data Concatenate :: Type -> Type -> Type where
+  Concatenate :: in1 -> in2 -> Concatenate in1 in2
+  deriving (Show)
+
+-- | This instance of INetwork as a Layer makes possible nesting INetworks
+instance (ValidNetwork ls ss, ValidNetwork ls2 ss2) => Layer (Concatenate (INetwork ls ss) (INetwork ls2 ss2)) where
+  layer = Concatenate mkINetwork mkINetwork
+  compile (Concatenate n1 n2) i = CNConcatenate (toCNetwork' n1 True i) (toCNetwork' n2 True i)
 
 --
 -- COMPUTING RESULTING SHAPES FROM A LIST OF LAYERS.
@@ -118,12 +122,12 @@ type family ComputeOut (layers :: [Type]) (s :: Shape) :: Shape where
 -- to this same parameters.
 type family ComposeOut' (layers :: [Type]) (s :: Shape) :: [Shape] where
   ComposeOut' '[] s = '[]
-  ComposeOut' (l : ls) s = ((Out l s) ': (ComposeOut' ls (Out l s)))
+  ComposeOut' (l : ls) s = (Out l s ': ComposeOut' ls (Out l s))
 
 -- | Same than ComposeOut' but the Shape list includes the initial Shape
 type family ComposeOut (layers :: [Type]) (s :: Shape) :: [Shape] where
   ComposeOut '[] s = '[]
-  ComposeOut ls s = s ': (ComposeOut' ls s)
+  ComposeOut ls s = s ': ComposeOut' ls s
 
 -- | Compares the layers shape computation and the expected output
 type family ValidateOutput (layers :: [Type]) (sIn :: Shape) (sOut :: Shape) :: Bool where
@@ -168,53 +172,45 @@ type family Concatenate' (sh1 :: Shape) (sh2 :: Shape) :: Shape where
 --   This type function should be instanciated for each of the Layers defined.
 type family Out (l :: Type) (s :: Shape) :: Shape where
 --
+-- Defines the output for special Layer declarations, such as the INetwork nesting
+-- and the Concatenate layer.
 --
+
+--
+-- Nesting INetworks
 --
   Out (INetwork ls (s : ss)) s = ComputeOut ls s
 --
+-- Concatenate INetworks
 --
---
-  Out (Add ls1 ls2) sIn = Add' ls1 ls2 sIn
--- MaybeShape
---     (ComputeOut ls1 sIn)
---     (ShapeEquals' (ComputeOut ls1 sIn) (ComputeOut ls2 sIn))  -- Validation that computes the same
--- Out (Add (INetwork ls (s : ss))) s = ComputeOut ls s
-
+  Out (Concatenate (INetwork ls1 (sIn : ss1)) (INetwork ls2 (sIn : ss2))) sIn =
+    Concatenate' (ComputeOut ls1 sIn) (ComputeOut ls2 sIn)
 --
 --
 --
   Out (BatchNormalization _ _ _) s = s
 --
 --
---
-  Out (Concatenate ls1 ls2) sIn = Concatenate' (ComputeOut ls1 sIn) (ComputeOut ls2 sIn)
--- MaybeShape
---     (ComputeOut ls1 sIn)
---     (ShapeEquals' (ComputeOut ls1 sIn) (ComputeOut ls2 sIn))  -- Validation that computes the same
--- Out (Add (INetwork ls (s : ss))) s = ComputeOut ls s
---
---
---
   Out (Conv2D 1 1 k k' s s') ('D2 inputRows inputColumns) =
     ( 'D2
-        (1 + (Div (inputRows - k) s))
-        (1 + (Div (inputColumns - k') s'))
+        (1 + Div (inputRows - k) s)
+        (1 + Div (inputColumns - k') s')
     )
   Out (Conv2D 1 filters k k' s s') ('D2 inputRows inputColumns) =
     ( 'D3
-        (1 + (Div (inputRows - k) s))
-        (1 + (Div (inputColumns - k') s'))
+        (1 + Div (inputRows - k) s)
+        (1 + Div (inputColumns - k') s')
         filters
     )
   Out (Conv2D channels 1 k k' s s') ('D3 inputRows inputColumns channels) =
     ( 'D2
-        (1 + (Div (inputRows - k) s))
-        (1 + (Div (inputColumns - k') s'))
+        (1 + Div (inputRows - k) s)
+        (1 + Div (inputColumns - k') s')
     )
   Out (Conv2D channels filters k k' s s') ('D3 inputRows inputColumns channels) =
     ( 'D3
-        (1 + (Div (inputRows - k) s))
-        (1 + (Div (inputColumns - k') s'))
+        (1 + Div (inputRows - k) s)
+        (1 + Div (inputColumns - k') s')
         filters
     )
 --
@@ -250,13 +246,13 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
 --
   Out (MaxPooling k k' s s') ('D2 inputRows inputColumns) =
     ( 'D2
-        (1 + (Div (inputRows - k) s))
-        (1 + (Div (inputColumns - k') s'))
+        (1 + Div (inputRows - k) s)
+        (1 + Div (inputColumns - k') s')
     )
   Out (MaxPooling k k' s s') ('D3 inputRows inputColumns channels) =
     ( 'D3
-        (1 + (Div (inputRows - k) s))
-        (1 + (Div (inputColumns - k') s'))
+        (1 + Div (inputRows - k) s)
+        (1 + Div (inputColumns - k') s')
         channels
     )
 --
@@ -315,7 +311,7 @@ instance
     SingI o,
     Layer x,
     ValidNetwork xs (o ': rs),
-    (Out x i) ~ o -- IMPORTANT: validation that the output and the computation of the layer
+    Out x i ~ o -- IMPORTANT: validation that the output and the computation of the layer
     -- will match. Without this constraint we could be able to create an
     -- instance of ValidNetwork that doesn't satisfies the type constraints
     -- of MkINetwork for example.

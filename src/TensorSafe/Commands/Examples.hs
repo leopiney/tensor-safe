@@ -2,7 +2,8 @@
 module TensorSafe.Commands.Examples (examples) where
 
 import TensorSafe.Examples.Examples
-  ( mnistExample,
+  ( mnistConcatenateExample,
+    mnistExample,
     mnistExampleDense,
     simpleExample,
   )
@@ -15,3 +16,5 @@ examples = do
   mnistExample
   putStrLn "\n\n"
   mnistExampleDense
+  putStrLn "\n\n"
+  mnistConcatenateExample

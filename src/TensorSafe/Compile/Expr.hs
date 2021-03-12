@@ -24,7 +24,6 @@ import Text.Casing (camel, quietSnake)
 -- the corresponding data structure here for the same layer.
 data DLayer
   = DActivation
-  | DAdd
   | DBatchNormalization
   | DConcatenate
   | DConv2D
@@ -42,7 +41,6 @@ data DLayer
 -- | Defines the
 data CNetwork
   = CNSequence CNetwork
-  | CNAdd CNetwork CNetwork
   | CNConcatenate CNetwork CNetwork
   | CNCons CNetwork CNetwork
   | CNLayer DLayer (Map String String)
@@ -63,7 +61,6 @@ class LayerGenerator l where
 
 instance LayerGenerator JavaScript where
   generateName _ DActivation = "activation"
-  generateName _ DAdd = "addStrict"
   generateName _ DBatchNormalization = "batchNormalization"
   generateName _ DConcatenate = "concatenate"
   generateName _ DConv2D = "conv2d"
@@ -79,7 +76,6 @@ instance LayerGenerator JavaScript where
 
 instance LayerGenerator Python where
   generateName _ DActivation = "Activation"
-  generateName _ DAdd = "add"
   generateName _ DBatchNormalization = "BatchNormalization"
   generateName _ DConcatenate = "Concatenate"
   generateName _ DConv2D = "Conv2D"
@@ -108,7 +104,6 @@ instance Generator JavaScript where
     where
       generateJS :: CNetwork -> [Text]
       generateJS (CNSequence cn) = "var model = tf.sequential();" : generateJS cn
-      generateJS (CNAdd cn1 cn2) = generateJS cn1 ++ generateJS cn2 -- FIX
       generateJS (CNConcatenate cn1 cn2) = generateJS cn1 ++ generateJS cn2 -- FIX
       generateJS (CNCons cn1 cn2) = generateJS cn1 ++ generateJS cn2
       generateJS CNNil = []
@@ -158,7 +153,6 @@ instance Generator Python where
     where
       generatePy :: CNetwork -> [Text]
       generatePy (CNSequence cn) = "model = tf.keras.models.Sequential()" : generatePy cn
-      generatePy (CNAdd cn1 cn2) = generatePy cn1 ++ generatePy cn2 -- FIX
       generatePy (CNConcatenate cn1 cn2) = generatePy cn1 ++ generatePy cn2 -- FIX
       generatePy (CNCons cn1 cn2) = generatePy cn1 ++ generatePy cn2
       generatePy CNNil = []
