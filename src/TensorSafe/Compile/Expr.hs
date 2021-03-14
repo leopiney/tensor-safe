@@ -40,7 +40,7 @@ data DLayer
 
 -- | Defines the
 data CNetwork
-  = CNSequence CNetwork
+  = CNSequence (Map String String) CNetwork
   | CNConcatenate CNetwork CNetwork
   | CNCons CNetwork CNetwork
   | CNLayer DLayer (Map String String)
@@ -98,21 +98,53 @@ class Generator l where
   -- have the CNetwork compiled at a separate file.
   generateFile :: l -> CNetwork -> Text
 
+data Model = Model String Integer
+
+instance Show Model where
+  show (Model name level) = name ++ "_" ++ show level
+
+newModel :: Model
+newModel = Model "x" 0
+
+nextModel :: String -> Model -> Model
+nextModel name (Model _ level) = Model name (level + 1)
+
 instance Generator JavaScript where
   generate l =
-    T.intercalate "\n" . generateJS
+    T.intercalate "\n" . generateJS newModel
     where
-      generateJS :: CNetwork -> [Text]
-      generateJS (CNSequence cn) = "var model = tf.sequential();" : generateJS cn
-      generateJS (CNConcatenate cn1 cn2) = generateJS cn1 ++ generateJS cn2 -- FIX
-      generateJS (CNCons cn1 cn2) = generateJS cn1 ++ generateJS cn2
-      generateJS CNNil = []
-      generateJS CNReturn = []
-      generateJS (CNLayer layer params) =
+      generateJS :: Model -> CNetwork -> [Text]
+      generateJS model (CNSequence params cn) =
+        format ("var input = tf.input(" % string % ");") (paramsToJS params) :
+        format ("var " % string % " = input;") (show model) :
+        generateJS model cn
+          ++ [ format
+                 ("model = tf.model({ inputs: input, outputs: " % string % " });")
+                 (show model)
+             ]
+      generateJS model (CNConcatenate cn1 cn2) =
+        let modelA = nextModel "a" model
+            modelB = nextModel "b" model
+         in format ("var " % string % " = " % string % ";") (show modelA) (show model) :
+            generateJS modelA cn1
+              ++ format ("var " % string % " = " % string % ";") (show modelB) (show model) :
+            generateJS modelB cn2
+              ++ [ format
+                     (string % " = tf.layers.concatenate().apply([" % string % ", " % string % "])")
+                     (show model)
+                     (show modelA)
+                     (show modelB)
+                 ]
+      generateJS model (CNCons cn1 cn2) = generateJS model cn1 ++ generateJS model cn2
+      generateJS _ CNNil = []
+      generateJS _ CNReturn = []
+      generateJS model (CNLayer layer params) =
         [ format
-            ("model.add(tf.layers." % string % "(" % string % "));")
+            (string % " = tf.layers." % string % "(" % string % ").apply(" % string % ")")
+            (show model)
             (generateName l layer)
             (paramsToJS params)
+            (show model)
         ]
 
   generateFile l cn =
@@ -152,7 +184,7 @@ instance Generator Python where
     T.intercalate "\n" . generatePy
     where
       generatePy :: CNetwork -> [Text]
-      generatePy (CNSequence cn) = "model = tf.keras.models.Sequential()" : generatePy cn
+      generatePy (CNSequence params cn) = "model = tf.keras.models.Sequential()" : generatePy cn
       generatePy (CNConcatenate cn1 cn2) = generatePy cn1 ++ generatePy cn2 -- FIX
       generatePy (CNCons cn1 cn2) = generatePy cn1 ++ generatePy cn2
       generatePy CNNil = []

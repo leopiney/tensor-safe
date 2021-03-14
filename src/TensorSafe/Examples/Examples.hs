@@ -7,12 +7,13 @@ module TensorSafe.Examples.Examples
     mnistExampleDense,
     simpleExample,
     mnistConcatenateExample,
+    mnistConcatenateComplexExample,
   )
 where
 
 import Data.Text.Lazy (unpack)
 import TensorSafe.Compile.Expr (JavaScript (..), generate)
-import TensorSafe.Examples.ConcatenateExample (mnistConcatenate)
+import TensorSafe.Examples.ConcatenateExample (mnistConcatenate, mnistConcatenateComplex)
 import TensorSafe.Examples.MnistExample (mnist, mnistDense)
 import TensorSafe.Examples.SimpleExample
   ( lstm,
@@ -85,3 +86,18 @@ mnistConcatenateExample =
     putStrLn "MNIST Concatenate generation"
     putStrLn "------------------------------"
     putStrLn $ unpack $ generate JavaScript (toCNetwork mnistConcatenate)
+
+mnistConcatenateComplexExample :: IO ()
+mnistConcatenateComplexExample =
+  do
+    putStrLn "MNIST Concatenate Complex with Concatenate example"
+    putStrLn "------------------------------"
+    print mnistConcatenateComplex
+    putStrLn "\n"
+    putStrLn "MNIST Concatenate Complex compilation"
+    putStrLn "------------------------------"
+    print (toCNetwork mnistConcatenateComplex)
+    putStrLn "\n"
+    putStrLn "MNIST Concatenate Complex generation"
+    putStrLn "------------------------------"
+    putStrLn $ unpack $ generate JavaScript (toCNetwork mnistConcatenateComplex)

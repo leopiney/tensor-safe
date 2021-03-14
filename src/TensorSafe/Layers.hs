@@ -1,6 +1,7 @@
 -- | This module exposes all Layers declared at TensorSafe.Layers.
 module TensorSafe.Layers
   ( BatchNormalization,
+    Concatenate (..),
     Conv2D,
     Dense,
     Dropout,
@@ -17,6 +18,7 @@ module TensorSafe.Layers
 where
 
 import TensorSafe.Layers.BatchNormalization (BatchNormalization)
+import TensorSafe.Layers.Concatenate (Concatenate (..))
 import TensorSafe.Layers.Conv2D (Conv2D)
 import TensorSafe.Layers.Dense (Dense)
 import TensorSafe.Layers.Dropout (Dropout)

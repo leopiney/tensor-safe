@@ -17,6 +17,7 @@
 module TensorSafe.Network where
 
 import Data.Kind (Type)
+import Data.Map (empty, fromList)
 import Data.Singletons (Sing, SingI (..))
 import GHC.TypeLits as N
 import GHC.TypeLits.Extra (Div)
@@ -26,6 +27,7 @@ import TensorSafe.Compile.Expr
 import TensorSafe.Layer (Layer, compile, layer)
 import TensorSafe.Layers
   ( BatchNormalization,
+    Concatenate (..),
     Conv2D,
     Dense,
     Dropout,
@@ -93,15 +95,18 @@ instance ValidNetwork ls ss => Layer (INetwork ls ss) where
   layer = mkINetwork
   compile n i = toCNetwork' n True i
 
--- | Concatenate layer
-data Concatenate :: Type -> Type -> Type where
-  Concatenate :: in1 -> in2 -> Concatenate in1 in2
-  deriving (Show)
-
 -- | This instance of INetwork as a Layer makes possible nesting INetworks
-instance (ValidNetwork ls ss, ValidNetwork ls2 ss2) => Layer (Concatenate (INetwork ls ss) (INetwork ls2 ss2)) where
+instance
+  (ValidNetwork ls ss, ValidNetwork ls2 ss2) =>
+  Layer
+    ( Concatenate
+        (INetwork ls ss)
+        (INetwork ls2 ss2)
+    )
+  where
   layer = Concatenate mkINetwork mkINetwork
-  compile (Concatenate n1 n2) i = CNConcatenate (toCNetwork' n1 True i) (toCNetwork' n2 True i)
+  compile (Concatenate n1 n2) i =
+    CNConcatenate (toCNetwork' n1 True i) (toCNetwork' n2 True i)
 
 --
 -- COMPUTING RESULTING SHAPES FROM A LIST OF LAYERS.
@@ -165,8 +170,8 @@ type family MaybeShape (s :: Shape) (b :: Bool) :: Shape where
 type family Add' (layers :: [Type]) (layers2 :: [Type]) (shape :: Shape) where
   Add' ls1 _ sIn = ComputeOut ls1 sIn
 
-type family Concatenate' (sh1 :: Shape) (sh2 :: Shape) :: Shape where
-  Concatenate' ('D1 x) ('D1 y) = ('D1 ((N.+) x y))
+type family ConcatenateCheck (sh1 :: Shape) (sh2 :: Shape) :: Shape where
+  ConcatenateCheck ('D1 x) ('D1 y) = ('D1 ((N.+) x y))
 
 -- | Defines the expected output of a layer
 --   This type function should be instanciated for each of the Layers defined.
@@ -184,7 +189,7 @@ type family Out (l :: Type) (s :: Shape) :: Shape where
 -- Concatenate INetworks
 --
   Out (Concatenate (INetwork ls1 (sIn : ss1)) (INetwork ls2 (sIn : ss2))) sIn =
-    Concatenate' (ComputeOut ls1 sIn) (ComputeOut ls2 sIn)
+    ConcatenateCheck (ComputeOut ls1 sIn) (ComputeOut ls2 sIn)
 --
 --
 --
@@ -337,24 +342,32 @@ toCNetwork ::
   CNetwork
 toCNetwork n =
   case (sing :: Sing i) of
-    D1Sing a -> CNSequence (toCNetwork' n False (Just $ show [natVal a]))
+    D1Sing a ->
+      let inputShape = (Just $ show [natVal a])
+          initialParams = case inputShape of
+            Just shape -> fromList [("shape", shape)]
+            Nothing -> empty
+       in CNSequence initialParams (toCNetwork' n False inputShape)
     D2Sing a b ->
-      CNSequence
-        ( toCNetwork'
-            n
-            False
+      let inputShape =
             ( Just $
                 show
                   [ natVal a,
                     natVal b
                   ]
             )
-        )
+          initialParams = case inputShape of
+            Just shape -> fromList [("shape", shape)]
+            Nothing -> empty
+       in CNSequence
+            initialParams
+            ( toCNetwork'
+                n
+                False
+                inputShape
+            )
     D3Sing a b c ->
-      CNSequence
-        ( toCNetwork'
-            n
-            False
+      let inputShape =
             ( Just $
                 show
                   [ natVal a,
@@ -362,7 +375,16 @@ toCNetwork n =
                     natVal c
                   ]
             )
-        )
+          initialParams = case inputShape of
+            Just shape -> fromList [("shape", shape)]
+            Nothing -> empty
+       in CNSequence
+            initialParams
+            ( toCNetwork'
+                n
+                False
+                inputShape
+            )
 
 -- | Helper function for `toCNetwork`
 toCNetwork' :: INetwork xs ss -> Bool -> Maybe String -> CNetwork
